@@ -1,7 +1,7 @@
 <?php
-namespace Service;
+namespace SmallHttp;
 
-class SayHello
+class Service
 {
     public static function world()
     {

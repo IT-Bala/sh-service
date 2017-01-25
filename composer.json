@@ -1,19 +1,8 @@
 {
-    "name": "small-http",
-    "description": "PHP Small Http Service",
-    "authors": [
-        {
-            "name": "Balasundar",
-            "email": "32deva@gmail.com"
-        }
-    ],
+    "name": "small-http/service",
+    "description": "Small Http is PHP Web Service",
+    "type": "project",
+    "license": "BSD License",
     "minimum-stability": "dev",
-    "require": {
-        "php": ">=5.3.0"
-    },
-    "autoload": {
-        "psr-0": {
-            "small-http": "src/"
-        }
-    }
-} 
+    "require": {}
+}

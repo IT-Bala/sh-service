@@ -1,16 +1,13 @@
 {
-    "name": "SmallHttp/Service",
+    "name": "Small-Http/Service",
     "description": "Small Http is PHP Web Service",
     "type": "project",
     "license": "BSD License",
     "minimum-stability": "dev",
     "require": {},
-	"require-dev": {
-        "phpunit/phpunit": "4.0.*"
-    },
 	"autoload": {
         "psr-4": {
-            "SmallHttp\\Service\\": "src"
+            "Small-Http\\Service\\": "src"
         }
     }
 }

@@ -7,6 +7,6 @@
 	"prefer-stable" : true,
     "require": {
         "php": ">=5.3.0",
-		"small-http": "dev"
+		"small-http/service": "dev"
 	}
 }

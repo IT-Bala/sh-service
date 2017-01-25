@@ -1,18 +1,14 @@
 {
-    "name": "small-http/service",
+    "name": "phpbala/sh-service",
 	"version": '1.0',
     "description": "Small Http is PHP Web Service",
-    "type": "project",
-    "license": "BSD License",
-    "minimum-stability": "dev",
-	"prefer-stable" : true,
-    "require": {
-        "php": ">=5.3.0",
-		"small-http/service": "@dev"
-	},
-	"autoload": {
-        "psr-0": {
-            "SmallHttp": "src/"
+    "repositories": [
+        {
+            "type": "Web",
+            "url": "https://github.com/phpbala/sh-service"
         }
+    ],
+    "require": {
+        "phpbala/sh-service": "dev-master"
     }
 }

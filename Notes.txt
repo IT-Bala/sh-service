@@ -1,0 +1,7 @@
+1. index.php will be run as server [ creating url and returns json response]
+
+2. client.php request and response ans everithing from core
+
+3. Http.php System code for all
+
+4. dbc/dbc.php is a database class library very light weight (medoo) 

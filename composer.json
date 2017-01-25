@@ -1,5 +1,5 @@
 {
-    "name": "phpbala/sh-service",
+    "name": "phpbala/Service",
 	"version": '1.0',
     "description": "Small Http is PHP Web Service",
     "repositories": [
@@ -9,6 +9,6 @@
         }
     ],
     "require": {
-        "phpbala/sh-service": "dev-master"
+        "phpbala/Service": "dev-master"
     }
 }

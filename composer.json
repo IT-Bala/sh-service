@@ -1,15 +1,10 @@
 {
-    "name": "small-http/small-http",
+    "name": "small-http/service",
     "description": "Small Http is PHP Web Service",
     "type": "project",
     "license": "BSD License",
     "minimum-stability": "dev",
     "require": {
 		"php": ">=5.3.0"
-	},
-    "autoload": {
-        "psr-0": {
-            "small-http": "src"
-        }
-    }
+	}
 }

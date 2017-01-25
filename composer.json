@@ -1,13 +1,11 @@
 {
-    "name": "SHF/Service",
+    "name": "small-http/service",
     "description": "Small Http is PHP Web Service",
     "type": "project",
     "license": "BSD License",
     "minimum-stability": "dev",
-    "require": {},
-	"autoload": {
-        "psr-4": {
-            "SHF\\Service\\": "src"
-        }
-    }
+	"prefer-stable" : true,
+    "require": {
+        "php": ">=5.3.0"
+	}
 }

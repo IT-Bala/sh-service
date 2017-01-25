@@ -1,0 +1,5 @@
+{
+    "require": {
+        "small-http": "1.0.*"
+    }
+}

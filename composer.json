@@ -1,5 +1,19 @@
 {
+    "name": "small-http",
+    "description": "PHP Small Http Service",
+    "authors": [
+        {
+            "name": "Balasundar",
+            "email": "32deva@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
     "require": {
-        "small-http": "1.0.*"
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "small-http": "src/"
+        }
     }
-}
+} 

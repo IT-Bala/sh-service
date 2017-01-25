@@ -9,7 +9,7 @@
 	},
     "autoload": {
         "psr-0": {
-            "small-http": "small-http/"
+            "small-http": "src"
         }
     }
 }

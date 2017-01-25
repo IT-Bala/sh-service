@@ -1,4 +1,4 @@
-<?php namespace SmallHttp\Service;
+<?php namespace SHF\Service;
  
 class Service {
  

@@ -1,5 +1,5 @@
 {
-    "name": "Small-Http/Service",
+    "name": "SHF/Service",
     "description": "Small Http is PHP Web Service",
     "type": "project",
     "license": "BSD License",
@@ -7,7 +7,7 @@
     "require": {},
 	"autoload": {
         "psr-4": {
-            "Small-Http\\Service\\": "src"
+            "SHF\\Service\\": "src"
         }
     }
 }

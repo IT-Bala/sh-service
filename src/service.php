@@ -1,10 +1,10 @@
-<?php
-namespace SmallHttp;
-
-class Service
-{
-    public static function world()
-    {
-        return 'Hello World, Composer!';
-    }
+<?php namespace SmallHttp\Service;
+ 
+class Service {
+ 
+  public function hasCheese($bool = true)
+  {
+    return $bool;
+  }
+ 
 }

@@ -1,5 +1,6 @@
 {
     "name": "small-http/service",
+	"version": '1.0',
     "description": "Small Http is PHP Web Service",
     "type": "project",
     "license": "BSD License",
@@ -7,6 +8,6 @@
 	"prefer-stable" : true,
     "require": {
         "php": ">=5.3.0",
-		"small-http/service": "dev"
+		"small-http/service": "1.0"
 	}
 }

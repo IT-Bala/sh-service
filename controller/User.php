@@ -1,7 +1,7 @@
 <?php
 class User{ 
 	public function insert(){
-		echo "Welcome";
+		Http::library('Demo')->a();
 	}	
 	public function update(){
 		echo 'Update';

@@ -1,4 +1,4 @@
-<?php
+<?php 
 define("BASE_URL","http://192.168.1.57/practice/small-http/");
 define("SH_KEY","API");
 define("SH_VALUE","SH");

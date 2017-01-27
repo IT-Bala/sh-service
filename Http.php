@@ -102,18 +102,29 @@ class Http{ var $http_method; public $db; protected $route_url=[];
 		$uri = '/' . trim($uri, '/');
 		return $uri;
 	}
-	private function switchPage($argUrl,$callback){ 
-		$this->route_url[$this->http_method][] = $argUrl;
-		switch($argUrl){
-			case self::getCurrentUri(): 
-				if($callback!=NULL) $this->access = $callback;
-			break;
-			default:
-			
+	private function switchPage($argUrl,$callback){
+		if(isset($this->route_url[$this->http_method]) && in_array($argUrl,$this->route_url[$this->http_method])){
+			die($this->setHeader("500",'Duplicate URL called '.$argUrl.' '));
+		}else{
+			$this->route_url[$this->http_method][] = $argUrl;
+			switch($argUrl){
+				case self::getCurrentUri(): 
+					if($callback!=NULL) $this->access = $callback;
+				break;
+				default:
+				
+			}
 		}
 	}
 	
-	public function run(){
+	public function run($sh=NULL){ 
+		if(is_string($sh)){ $ext_file = EXT_PATH.$sh.'.php';
+			if(file_exists($ext_file)) require_once $ext_file;
+		}else if(is_array($sh)){
+			foreach($sh as $sh_file){ $ext_file = EXT_PATH.$sh_file.'.php';
+				if(file_exists($ext_file)) require_once $ext_file;
+			}
+		}
 		switch($this->http_method){
 			case ('GET' || 'POST' || 'PUT' || 'DELETE'):
 				if(isset($this->route_url[$this->http_method]) && in_array(self::getCurrentUri(),$this->route_url[$this->http_method])){
@@ -156,6 +167,9 @@ class Http{ var $http_method; public $db; protected $route_url=[];
 			if(class_exists($model)) return new $model;
 		}
 	}
+	public function view($file=NULL,$args=NULL){
+			return self::html($file,$args);
+	}
 	public function html($file=NULL){ $args = func_get_args();
 			if(count($args)>0 && $args[0]!=''){
 				if(isset($args[1]) && $args[1]!=NULL){ 
@@ -163,7 +177,7 @@ class Http{ var $http_method; public $db; protected $route_url=[];
 				}
 				$file = HTML_PATH.$args[0].'.php';
 				if(file_exists($file)) require_once $file;
-			}
+			} return new Http;
 	}
 	public function library($class=NULL,$object=true){ $args = func_get_args();
 			if(count($args)>0 && $args[0]!=''){
@@ -172,9 +186,13 @@ class Http{ var $http_method; public $db; protected $route_url=[];
 				if(class_exists($args[0]) && $object==true) return new $args[0];
 			}
 	}
+	public function db(){
+		return $this->db;
+	}
 }
-function instance(){
-	return new Http();
+function db(){
+	$dbc = new Http();
+	return $dbc->db;
 }
 function getError($number, $msg, $file, $line, $vars){
 	   $error = debug_backtrace(); #var_dump($error);

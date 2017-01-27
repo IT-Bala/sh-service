@@ -1,6 +1,7 @@
 i. Call html view file:
 	Http::html('test'); # View file 
-	$app->html('test'); # html/test.php file include
+	$app->html('header')->html('test'); # html/test.php file include
+	$app->view('test');
 
 i. Call model file:
 	Http::model('test')->func(); # running
@@ -30,6 +31,29 @@ i. Call Controller file:
 	$file_path = 'uploads/'.time().'-filename'; # Without extension because file map .MP3,.MP4 etc.
 	$app->file_save($file_path,$file->photo);
 	
-3. 
+3. DATABASE :
+	
+    Inside of the routes or get,post methods we can call like this : 
+	
+	$app->db->query(""); OR $app->db()->query("");
+
+4. DB Calling on controller, Model or library file :
+
+	Http::db()->query(""); 	OR  db()->query("");
+	
+	(OR)
+
+	(new Http)->db->query("");
+
+5. Extender Routes depends ON Module wise:
+
+	The index file end line is $app->run();
+	
+	$app->run('test'); OR $app->run(['user','member']);
+
+6. Creating get, post, routes urls inside of the extender
+
+	self::get('/demo',function(){ }); OR Http::get('/demo',function(){ });
+   
 
 	

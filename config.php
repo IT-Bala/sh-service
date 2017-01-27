@@ -8,6 +8,7 @@ define("CONTROLLER_PATH","controller/");
 define("MODEL_PATH","model/");
 define("HTML_PATH","html/");
 define("LIBRARY_PATH","library/");
+define("EXT_PATH","extender/");
 #=================================#
 /* DATABASE */
 define("HOST","localhost");

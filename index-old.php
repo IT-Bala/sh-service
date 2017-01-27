@@ -25,14 +25,14 @@ $app->get('/Web/service','User::index');
 	
 });*/
 
-/*$app->post('/upload',function($app){ $data = array();	
-	$response = $app->body();
-	if($response->username && $response->photo != NULL){
-		$file_path = "uploads/".time();
-		$app->create_file($file_path,$response->photo);
-		$data = array("message"=>"success");	
-	}	
-	echo $app->json($data);
+/*$app->post("/upload",function($app){
+	$file = $app->body();
+	$app->file_save("uploads/".time(),$file->photo);
+	#$app->library('ImageResize',false);	
+	#$image = ImageResize::createFromString($app->file_decode($file->photo));
+	#$image->scale(50);
+	#$image->save('uploads/image_string.jpg');	
+	echo $app->json(["Success"]);
 });*/
 
 $app->routes('GET /Web',[

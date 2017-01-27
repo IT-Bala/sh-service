@@ -137,7 +137,9 @@ class Http{ var $http_method; public $db; protected $route_url=[];
 								if(file_exists(CONTROLLER_PATH.$controller.'.php')){
 									require_once CONTROLLER_PATH.$controller.'.php';
 									if (method_exists($controller,$method)){
-										call_user_func($call);
+										$obj = new $controller;
+										$obj->$method();
+										#call_user_func($call);
 									}else{
 										die($this->setHeader("500","Bad format of calling method"));
 									}

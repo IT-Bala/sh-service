@@ -1,5 +1,19 @@
-SH-Web Service is small & fastest php framework developed by phpbala@2016
+#SH-Web Service is small & fastest php framework developed by phpbala@2016
 
+# index.php file #
+
+Refer config.php file for SH auth
+#==============================================#
+define("SHA",false); # Small Http::SH Authentication [Don't remove it]
+#==============================================#
+
+require_once 'Http.php';
+
+$app = new Http();
+
+$app->get('/',function($app){ echo $app->json(["Welcome to SH server"]); });
+
+# index.php file #
 
 i. Call html view file:
 	Http::html('test'); # View file 

@@ -6,14 +6,21 @@ require_once 'config.php';
 class Http{ var $http_method; public $db; protected $route_url=[];
 	public function Http(){ #set_error_handler('getError');
 		$this->http_method = $_SERVER['REQUEST_METHOD'];
-		$this->db = new dbc([
-			'database_type' => DATABASE_TYPE,
-			'database_name' => DATABASE,
-			'server' => HOST,
-			'username' => USERNAME,
-			'password' => PASSWORD,
-			'charset' => 'utf8'
-		]);
+		try{
+			$this->db = new dbc([
+				'database_type' => DATABASE_TYPE,
+				'database_name' => DATABASE,
+				'server' => HOST,
+				'username' => USERNAME,
+				'password' => PASSWORD,
+				'charset' => 'utf8'
+			]);
+		}catch(Exception $e){
+			if($e){
+				die(Http::json(["Database Connection failed"]));
+			}
+		}
+		
 		$this->input = new Input;
 	}
 	public function __call($name,$args){

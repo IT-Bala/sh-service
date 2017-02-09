@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Documentation of PHP-SH Webservice</title>
+
+    <link rel="stylesheet" href="prism.css">
+
+    <script src="prism.js"></script>
+</head>
+<style>
+    *,html{
+        margin: 0 auto;
+        padding: 0;
+    }
+    #wrapper{
+        width: 80%;
+        margin: 0 auto;
+        padding: 0;
+    }
+</style>
+<body>
+<div id="wrapper">
+    
+<pre>
+    <h2>Simple User Guide</h2>
+<code class="language-php">
+#SH-Web Service is small & fastest php framework developed by phpbala@2016
+
+# index.php file #
+
+Refer config.php file for SH auth Key=>Value
+
+#==============================================#
+define("SHA",false); # Small Http::SH Authentication [Don't remove it]
+#==============================================#
+
+
+require_once 'Http.php';
+
+$app = new Http();
+
+$app->get('/',function($app){
+        echo $app->json(["Welcome to SH server"]);
+    });
+</code> 
+</pre>
+<pre>
+<code class="language-php">
+# index.php file #
+
+* Call html view file:
+	Http::html('test'); # View file 
+	$app->html('header')->html('test'); # html/test.php file include
+	$app->view('test');
+</code> 
+</pre>
+<pre>
+<code class="language-php">
+* Call model file:
+	Http::model('test')->func(); # running
+	$app->model('test'); # html/test.php file include
+</code> 
+</pre>
+<pre>
+<code class="language-php">
+* Call Controller file:
+	$app->routes('POST /parent_url',['sub_url'=>'Class::Method']);
+	$app->routes('POST /user',['update'=>'User::update','delete'=>'User::delete']);
+</code> 
+</pre>
+<pre>
+<code class="language-php">
+* Image Resizing:
+	https://github.com/eventviva/php-image-resize
+	
+	$file = $app->body();
+	$app->library('ImageResize',false);
+	$image = ImageResize::createFromString($app->file_decode($file->photo));	
+	$image->scale(50); # $image->resize(800, 600); # $image->crop(200, 200);
+	$image->save('uploads/image_string.jpg');	
+					{OR}
+	$app->library('ImageResize',false);
+	$image = new ImageResize('uploads/image.jpg');	
+	$image->scale(50); # $image->resize(800, 600); # $image->crop(200, 200);
+	$image->save('uploads/image.jpg');
+</code> 
+</pre>
+<pre>
+<code class="language-php">
+* File Save Concept:
+	
+	$file = $app->body();
+	$file_path = 'uploads/'.time().'-filename'; # Without extension because file map .MP3,.MP4 etc.
+	$app->file_save($file_path,$file->photo);
+</code> 
+</pre>
+<pre>
+<code class="language-php">	
+* DATABASE :
+	
+    Inside of the routes or get,post methods we can call like this : 
+	
+	$app->db->query(""); OR $app->db()->query("");
+</code> 
+</pre>
+<pre>
+<code class="language-php">
+* DB Calling on controller, Model or library file :
+
+	Http::db()->query(""); 	OR  db()->query("");
+	
+	(OR)
+
+	(new Http)->db->query("");
+</code> 
+</pre>
+<pre>
+<code class="language-php">
+* Extender Routes depends ON Module wise:
+
+	The index file end line is $app->run();
+	
+	$app->run('test'); OR $app->run(['user','member']);
+
+* Creating get, post, routes urls inside of the extender
+
+	self::get('/demo',function(){ }); OR Http::get('/demo',function(){ });
+</code> 
+</pre>
+<pre>
+    <code class="language-javascript">
+        Support : 32deva@gmail.com
+        Call    : <a href="tel:91 7402578982">+91 7402578982</a>
+    </code>
+</pre>
+</div>
+</body>
+</html>
+
+<!--
+
+Language 	    Class
+HTML 	        language-markup
+CSS 	        language-css
+JavaScript 	    language-javascript
+CoffeeScript 	language-coffeescript
+PHP 	        language-php
+Ruby 	        language-ruby
+Go 	            language-go 
+-->

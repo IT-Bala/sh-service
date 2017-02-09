@@ -73,4 +73,3 @@ i. Call Controller file:
 	self::get('/demo',function(){ }); OR Http::get('/demo',function(){ });
    
 
-	

@@ -8,130 +8,144 @@
 
     <script src="prism.js"></script>
 </head>
-<style>
-    *,html{
-        margin: 0 auto;
-        padding: 0;
-    }
-    #wrapper{
-        width: 80%;
-        margin: 0 auto;
-        padding: 0;
-    }
-</style>
 <body>
 <div id="wrapper">
-    
+    <h2 align="center">API's User Guide</h2>
+
+<h3>Route</h3>
 <pre>
-    <h2>Simple User Guide</h2>
 <code class="language-php">
-#SH-Web Service is small & fastest php framework developed by phpbala@2016
-
-# index.php file #
-
-Refer config.php file for SH auth Key=>Value
-
-#==============================================#
-define("SHA",false); # Small Http::SH Authentication [Don't remove it]
-#==============================================#
-
-
-require_once 'Http.php';
-
-$app = new Http();
-
-$app->get('/',function($app){
-        echo $app->json(["Welcome to SH server"]);
-    });
+    #==============================================#
+    define("SHA",false); # Small Http::SH Authentication [Don't remove it]
+    #==============================================#
+    require_once 'Http.php';
+    $app = new Http();
+    $app->get('/',function($app){
+            echo $app->json(["Welcome to SH server"]);
+        });
+    $app->run();
 </code> 
 </pre>
+<h3>Views</h3>
 <pre>
 <code class="language-php">
-# index.php file #
-
-* Call html view file:
 	Http::html('test'); # View file 
 	$app->html('header')->html('test'); # html/test.php file include
 	$app->view('test');
 </code> 
 </pre>
+<h3>Model</h3>
 <pre>
 <code class="language-php">
-* Call model file:
 	Http::model('test')->func(); # running
 	$app->model('test'); # html/test.php file include
 </code> 
 </pre>
+<h3>Controller</h3>
 <pre>
 <code class="language-php">
-* Call Controller file:
 	$app->routes('POST /parent_url',['sub_url'=>'Class::Method']);
 	$app->routes('POST /user',['update'=>'User::update','delete'=>'User::delete']);
 </code> 
 </pre>
+<h3>Library</h3>
 <pre>
 <code class="language-php">
-* Image Resizing:
-	https://github.com/eventviva/php-image-resize
-	
-	$file = $app->body();
-	$app->library('ImageResize',false);
-	$image = ImageResize::createFromString($app->file_decode($file->photo));	
-	$image->scale(50); # $image->resize(800, 600); # $image->crop(200, 200);
-	$image->save('uploads/image_string.jpg');	
-					{OR}
-	$app->library('ImageResize',false);
-	$image = new ImageResize('uploads/image.jpg');	
-	$image->scale(50); # $image->resize(800, 600); # $image->crop(200, 200);
-	$image->save('uploads/image.jpg');
+	# It will create object
+    $app->library('Class')->func();
+     [OR] 
+    # It will not create object
+	$app->library('Class',false);
+    Class::func();
 </code> 
 </pre>
+<h3>File upload</h3>
 <pre>
-<code class="language-php">
-* File Save Concept:
-	
+<code class="language-php">	
 	$file = $app->body();
 	$file_path = 'uploads/'.time().'-filename'; # Without extension because file map .MP3,.MP4 etc.
 	$app->file_save($file_path,$file->photo);
 </code> 
 </pre>
+<h3>Image processing</h3>
 <pre>
 <code class="language-php">	
-* DATABASE :
-	
-    Inside of the routes or get,post methods we can call like this : 
-	
+	$file = $app->body();
+	$app->library('ImageResize',false);
+	$image = ImageResize::createFromString($app->file_decode($file->photo));	
+	$image->scale(50); # $image->resize(800, 600); # $image->crop(200, 200);
+	$image->save('uploads/image_string.jpg');	
+					[OR]
+	$app->library('ImageResize',false);
+	$image = new ImageResize('uploads/image.jpg');	
+	$image->scale(50); # $image->resize(800, 600); # $image->crop(200, 200);
+	$image->save('uploads/image.jpg');
+    
+    Reference : https://github.com/eventviva/php-image-resize
+</code> 
+</pre>
+<h3>Form inputs</h3>
+<pre>
+<code class="language-php">	
+	$app->input->get("name"); OR $app->input->get();
+    $app->input->post("name"); OR $app->input->post();
+    $app->input->request("name"); OR $app->input->request();
+</code> 
+</pre>
+<h3>Database connection</h3>
+<pre>
+<code class="language-php">	
+	Check the config.php file to connect the database
+    define("HOST","phpbala.in");
+    define("USERNAME","root");
+    define("PASSWORD","");
+    define("DATABASE","phpbala");
+    define("DATABASE_TYPE","mysql");
+    define("DB_STATUS",true);   # ON | OFF = 1 | 0
+</code> 
+</pre>
+<h3>Database query</h3>
+<pre>
+<code class="language-php">
+	<b>Database Objects:</b>
 	$app->db->query(""); OR $app->db()->query("");
-</code> 
-</pre>
-<pre>
-<code class="language-php">
-* DB Calling on controller, Model or library file :
-
-	Http::db()->query(""); 	OR  db()->query("");
 	
-	(OR)
+    Inside of the controller, Model or library use this ways :
 
+	Http::db()->query(""); 	OR  db()->query("");	
+	(OR)
 	(new Http)->db->query("");
+    
+    Reference : http://medoo.in
 </code> 
 </pre>
+<h3>Extender routes</h3>
 <pre>
 <code class="language-php">
-* Extender Routes depends ON Module wise:
-
-	The index file end line is $app->run();
+	Extender Routes useful for large applications to understand multiple module's :
 	
 	$app->run('test'); OR $app->run(['user','member']);
 
-* Creating get, post, routes urls inside of the extender
+	Creating get, post, routes urls inside of the extender
 
 	self::get('/demo',function(){ }); OR Http::get('/demo',function(){ });
 </code> 
 </pre>
+<h3>API Auth</h3>
+<pre>
+<code class="language-php">
+    #==============================================#
+    define("SHA",true); # Make it true
+    #==============================================#
+    Check the config.php 
+    
+    define("SH_KEY","API");
+    define("SH_VALUE","SH");
+</code> 
+</pre>
 <pre>
     <code class="language-javascript">
-        Support : 32deva@gmail.com
-        Call    : <a href="tel:91 7402578982">+91 7402578982</a>
+        <p align="center">Support : 32deva@phpbala.in</p>
     </code>
 </pre>
 </div>

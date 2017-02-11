@@ -3,15 +3,20 @@
 <head>
     <meta charset="utf-8">
     <title>Documentation of PHP-SH Webservice</title>
-
     <link rel="stylesheet" href="prism.css">
-
     <script src="prism.js"></script>
+	<style>
+		.content-left{ float: left; width: 48%;}
+		.content-right{ float: right; width: 48%;}
+	</style>
 </head>
 <body>
 <div id="wrapper">
-    <h2 align="center">API's User Guide</h2>
-
+<h2 align="center">API's User Guide</h2>
+<div class="content-left">
+<br><hr><br>
+<h3 align="center">Web Server</h3>
+<br><hr><br>
 <h3>Route</h3>
 <pre>
 <code class="language-php">
@@ -138,11 +143,62 @@
     define("SHA",true); # Make it true
     #==============================================#
     Check the config.php 
-    
-    define("SH_KEY","API");
-    define("SH_VALUE","SH");
+    define("SH_KEY","API"); # We can change the Auth Key
+    define("SH_VALUE","SH"); # We can change the Auth Value
 </code> 
 </pre>
+</div>
+<div class="content-right">
+<br><hr><br>
+<h3 align="center">Web Client</h3>
+<br><hr><br>
+<h3>Initiate Curl</h3>
+<pre>
+<code class="language-php">
+    define("BASE_URL","http://domain.com/");
+	define("SH_KEY","API");
+	define("SH_VALUE","SH");	
+	require_once 'Curl.php';
+</code> 
+</pre>
+<h3>Curl post</h3>
+<pre>
+<code class="language-php">
+    $result 	  = array(
+						"username"=>$_POST['username'],
+						"photo"=>Curl::file_encode('photo')
+					);
+	echo Curl::post($url,json_encode($result),true);
+</code> 
+</pre>
+<h3>Curl get</h3>
+<pre>
+<code class="language-php">
+	# No Need to pass arguments here, If you need to pass use query string like this ?id=1&q=bala
+	echo Curl::get($url,true);
+</code> 
+</pre>
+<h3>Curl put</h3>
+<pre>
+<code class="language-php">
+    $result 	  = array(
+						"username"=>$_POST['username']
+					);
+	echo Curl::put($url,json_encode($result),true);
+</code> 
+</pre>
+<h3>Curl delete</h3>
+<pre>
+<code class="language-php">
+    $result 	  = array(
+						"username"=>$_POST['username']
+					);
+	echo Curl::delete($url,json_encode($result),true);
+</code> 
+</pre>
+</div>
+<div style="clear: both"></div>
+>>>>>>> 5b5eeb2d8ab6da04b3513b97560069b25e7a8cc4
 <pre>
     <code class="language-javascript">
         <p align="center">Support : 32deva@phpbala.in</p>

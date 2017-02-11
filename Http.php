@@ -1,6 +1,7 @@
 <?php
 if(!defined("SHA")) die("Access denied!");
 require_once 'dbc/dbc.php';
+require 'autoload.php';
 require_once 'Input.php';
 require_once 'config.php';
 class Http{ var $http_method; public $db; protected $route_url=[];
@@ -200,6 +201,9 @@ class Http{ var $http_method; public $db; protected $route_url=[];
 	public function db(){
 		return $this->db;
 	}
+}
+function http(){
+	return new Http();
 }
 function db(){
 	$dbc = new Http();

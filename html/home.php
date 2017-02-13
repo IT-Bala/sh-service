@@ -1,6 +1,7 @@
-<p align="center">Welcome to AngularJs API</p>
-<!--<form method="post" action="./demo">
-	<input type="submit" />
-</form>-->
+<p align="center">AngularJs API</p>
+<form method="post">
+    <input type="text" name="name">
+	<input type="submit" name="doSubmit" />
+</form>
 
 

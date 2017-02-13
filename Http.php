@@ -33,8 +33,10 @@ class Http{ var $http_method; public $db; protected $route_url=[];
 		$pre = (filter_var($target, FILTER_SANITIZE_URL));
 		if($pre!='' && is_array($callback)){ # multiple url calls
 		 $splitter = explode("/",$pre); 
-		 if(count($splitter)>=2){
-			 $method = $splitter[0]; array_shift($splitter); $preUrl = '/'.implode("/",$splitter);
+		 if(count($splitter)>=1){
+			 $method = $splitter[0]; $addSlash = (isset($splitter[1]) && $splitter[1]!='')?'/':'';
+			 array_shift($splitter);
+			 $preUrl = $addSlash.implode("/",$splitter); #die;
 			 foreach($callback as $url=>$call_function){
 				$subUrl = (filter_var($url, FILTER_SANITIZE_URL)); 				
 				if($this->http_method == $method && $callback!=NULL) self::switchPage($preUrl.'/'.$subUrl,$call_function);
@@ -42,7 +44,7 @@ class Http{ var $http_method; public $db; protected $route_url=[];
 		 }else{
 			 die($this->setHeader("500","Bad format of routes"));
 		 }
-		}else{ # It may string OR func($app){}
+		}else{ # It may string OR func($app){}			
 			$splitter = explode("/",$pre); 
 			 if(count($splitter)>=2){
 				 $method = $splitter[0]; array_shift($splitter); $preUrl = '/'.implode("/",$splitter);

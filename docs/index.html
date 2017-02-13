@@ -28,7 +28,23 @@
     $app->get('/',function($app){
             echo $app->json(["Welcome to SH server"]);
         });
+	$app->post('/',function($app){
+            echo 'Data posting...';
+        });
     $app->run();
+</code> 
+</pre>
+<h3>Multiple Routes</h3>
+<pre>
+<code class="language-php">	
+    $app->routes('GET/',[
+		'home'=>function($app){
+            $app->html('home');
+        },
+		'about'=>function($app){
+            $app->html('about');
+        }
+		]);
 </code> 
 </pre>
 <h3>Views</h3>

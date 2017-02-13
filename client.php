@@ -10,7 +10,6 @@ $url 		 = BASE_URL.'user/insert';
 $post_fields = array();
 #$rest = new Curl();
 #echo Curl::get($url,true);
-#echo Curl::post($url,[],true);
 
 if(isset($_POST['submit'])){
 	$url 		 = BASE_URL.'upload';

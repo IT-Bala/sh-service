@@ -7,6 +7,6 @@ require_once 'Http.php';
 
 $app = new Http();
 
-$app->get('/',function($app){  echo $app->json('Welcome to SH service');   });
+$app->get('/',function($app){  $app->json('Welcome to SH service');  });
 
 $app->run(); # Extender

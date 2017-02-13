@@ -34,15 +34,39 @@
     $app->run();
 </code> 
 </pre>
-<h3>Multiple Routes</h3>
+<h3>Multiple URL in Single Route</h3>
 <pre>
 <code class="language-php">	
     $app->routes('GET/',[
 		'home'=>function($app){
-            $app->html('home');
+            $app->html('home'); # html/home.php
         },
 		'about'=>function($app){
-            $app->html('about');
+            $app->html('about'); # html/about.php
+        }
+		]);
+</code>
+</pre>
+<h3>Create Normal Page : Without Auth</h3>
+<pre>
+<code class="language-php">
+	# It will allow GET & POST without auth
+    $app->page('/about',function($app){
+			# All the action will work here, Like normal php file
+			if(isset($_POST['doSubmit'])) print_r($_POST);
+            $app->html('about'); # html/about.php
+        });
+</code> 
+</pre>
+<h3>Multiple Page URL in Single Route: Without Auth</h3>
+<pre>
+<code class="language-php">	
+    $app->routes('PAGE/',[
+		'home'=>function($app){
+            $app->html('home'); # html/home.php
+        },
+		'about'=>function($app){
+            $app->html('about'); # html/about.php
         }
 		]);
 </code> 
@@ -50,6 +74,7 @@
 <h3>Views</h3>
 <pre>
 <code class="language-php">
+	# Inside of html folder create filename.php
 	Http::html('test'); # View file 
 	$app->html('header')->html('test'); # html/test.php file include
 	$app->view('test');
@@ -58,6 +83,7 @@
 <h3>Model</h3>
 <pre>
 <code class="language-php">
+	# Inside of model folder create classname.php
 	Http::model('test')->func(); # running
 	$app->model('test'); # html/test.php file include
 </code> 
@@ -65,6 +91,7 @@
 <h3>Controller</h3>
 <pre>
 <code class="language-php">
+	# Inside of controller folder create classname.php
 	$app->routes('POST /parent_url',['sub_url'=>'Class::Method']);
 	$app->routes('POST /user',['update'=>'User::update','delete'=>'User::delete']);
 </code> 

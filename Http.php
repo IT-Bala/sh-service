@@ -4,7 +4,7 @@ require_once 'dbc/dbc.php';
 require 'autoload.php';
 require_once 'Input.php';
 require_once 'config.php';
-class Http{ var $http_method; public $db; protected $route_url=[];
+class Http{ var $http_method; public $db; protected $route_url=[]; public $next_object=[];
 	public function Http(){ set_error_handler('getError');
 		$this->http_method = $_SERVER['REQUEST_METHOD'];
 		try{
@@ -38,17 +38,27 @@ class Http{ var $http_method; public $db; protected $route_url=[];
 			 array_shift($splitter);
 			 $preUrl = $addSlash.implode("/",$splitter); #die;
 			 foreach($callback as $url=>$call_function){
-				$subUrl = (filter_var($url, FILTER_SANITIZE_URL)); 				
-				if($this->http_method == $method && $callback!=NULL) self::switchPage($preUrl.'/'.$subUrl,$call_function);
+				$subUrl = (filter_var($url, FILTER_SANITIZE_URL));
+				if($method == 'PAGE'){
+					if($this->http_method == 'GET' || $this->http_method == 'POST' && $callback!=NULL) self::switchPage($preUrl.'/'.$subUrl,$call_function,false);
+				 }else{
+					if($this->http_method == $method && $callback!=NULL) self::switchPage($preUrl.'/'.$subUrl,$call_function);
+				 }
 			 }
 		 }else{
 			 die($this->setHeader("500","Bad format of routes"));
 		 }
 		}else{ # It may string OR func($app){}			
 			$splitter = explode("/",$pre); 
-			 if(count($splitter)>=2){
-				 $method = $splitter[0]; array_shift($splitter); $preUrl = '/'.implode("/",$splitter);
-				 if($this->http_method == $method && $callback!=NULL) self::switchPage($preUrl,$callback);
+			 if(count($splitter)>=1){
+				 $method = $splitter[0]; $addSlash = (isset($splitter[1]) && $splitter[1]!='')?'/':'';
+				 array_shift($splitter);
+				 $preUrl = $addSlash.implode("/",$splitter); #die;
+				 if($method == 'PAGE'){
+					if($this->http_method == 'GET' || $this->http_method == 'POST' && $callback!=NULL) self::switchPage($preUrl,$callback,false);
+				 }else{
+					if($this->http_method == $method && $callback!=NULL) self::switchPage($preUrl,$callback);
+				 }
 			 }
 		}
 		#die;
@@ -68,6 +78,10 @@ class Http{ var $http_method; public $db; protected $route_url=[];
 	public function delete($target=NULL,$callback=NULL){
 		$argUrl = (filter_var($target, FILTER_SANITIZE_URL));
 		if($this->http_method == 'DELETE' && $callback!=NULL) self::switchPage($argUrl,$callback);
+	}
+	public function page($target=NULL,$callback=NULL){
+		$argUrl = (filter_var($target, FILTER_SANITIZE_URL));
+		if(($this->http_method == 'GET' || $this->http_method == 'POST') && $callback!=NULL) self::switchPage($argUrl,$callback,false);
 	}
 	private function setHeader($status,$body=""){
 		if($status!=""){
@@ -100,10 +114,15 @@ class Http{ var $http_method; public $db; protected $route_url=[];
 	public function body(){
 		return json_decode(file_get_contents("php://input"));
 	}
-	public function json($content){
+	public function json($content,$object=false){
 		// application/json
-		return Http::setHeader("200",$content);
-	}	
+		if($object==true){
+			return json_decode(Http::setHeader("200",$content));
+		}else{
+			die(Http::setHeader("200",$content));
+		}
+	}
+	
 	private function error(){
 		
 	}
@@ -114,14 +133,15 @@ class Http{ var $http_method; public $db; protected $route_url=[];
 		$uri = '/' . trim($uri, '/');
 		return $uri;
 	}
-	private function switchPage($argUrl,$callback){
+	private function switchPage($argUrl,$callback,$check_auth=true){
 		if(isset($this->route_url[$this->http_method]) && in_array($argUrl,$this->route_url[$this->http_method])){
-			die($this->setHeader("500",'Duplicate URL called '.$argUrl.' '));
+			die($this->setHeader("500",$this->http_method.': Duplicate URL called '.$argUrl.' multiple times called '));
 		}else{
 			$this->route_url[$this->http_method][] = $argUrl;
 			switch($argUrl){
 				case self::getCurrentUri(): 
 					if($callback!=NULL) $this->access = $callback;
+					$this->check_auth = $check_auth;
 				break;
 				default:
 				
@@ -138,9 +158,9 @@ class Http{ var $http_method; public $db; protected $route_url=[];
 			}
 		}
 		switch($this->http_method){
-			case ('GET' || 'POST' || 'PUT' || 'DELETE'):
+			case ('GET' || 'POST' || 'PUT' || 'DELETE' || 'PAGE'):
 				if(isset($this->route_url[$this->http_method]) && in_array(self::getCurrentUri(),$this->route_url[$this->http_method])){
-				  if((isset($_SERVER['HTTP_'.SH_KEY]) && $_SERVER['HTTP_'.SH_KEY] == SH_VALUE) || SHA==FALSE){
+				  if((isset($_SERVER['HTTP_'.SH_KEY]) && $_SERVER['HTTP_'.SH_KEY] == SH_VALUE) || SHA==FALSE || $this->check_auth == FALSE){
 						$call = $this->access;
 						if(is_string($call)){ # Routes
 							$splitC = explode('::',$call);

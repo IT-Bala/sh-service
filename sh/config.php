@@ -16,4 +16,4 @@ define("USERNAME","root");
 define("PASSWORD","root");
 define("DATABASE","3p-php");
 define("DATABASE_TYPE","mysql");
-define("DB_STATUS",false);    #
+define("DB_STATUS",false);    # ON | OFF = 1 | 0

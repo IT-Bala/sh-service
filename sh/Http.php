@@ -1,11 +1,11 @@
 <?php
+namespace sh;
 if(!defined("SHA")) die("Access denied!");
 require_once 'dbc/dbc.php';
-require 'autoload.php';
 require_once 'Input.php';
 require_once 'config.php';
 class Http{ var $http_method; public $db; protected $route_url=[]; public $next_object=[];
-	public function Http(){ set_error_handler('getError');
+	public function __construct(){ #set_error_handler('getError');
 		$this->http_method = $_SERVER['REQUEST_METHOD'];
 		try{
 			if(DB_STATUS == true){
@@ -226,19 +226,15 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			}
 	}
 	public function db(){
-		if(DB_STATUS == true){
-			return $this->db;
-		}else{ die($this->setHeader("500","Enble DB_STATUS in config.php")); }
+		return $this->db;
 	}
 }
 function http(){
 	return new Http();
 }
 function db(){
-	if(DB_STATUS == true){
-		$dbc = new Http();
-		return $dbc->db;
-	}else{ die($this->setHeader("500","Enble DB_STATUS in config.php")); }
+	$dbc = new Http();
+	return $dbc->db;
 }
 function getError($number, $msg, $file, $line, $vars){
 	   $error = debug_backtrace(); #var_dump($error);

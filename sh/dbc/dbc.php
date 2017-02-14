@@ -1,4 +1,5 @@
 <?php
+namespace sh;
 /*!
  * dbc database framework
  * http://small-http.in
@@ -150,7 +151,7 @@ class dbc
 			throw new Exception($e->getMessage());
 		}
 	}
-	
+
 	public function query($query)
 	{
 		if ($this->debug_mode)

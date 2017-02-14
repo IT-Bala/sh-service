@@ -184,9 +184,14 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 						}else{ # Individual
 							$call( new Http() );
 						}
-				  }else{
-						die($this->setHeader("401","Unauthorized"));
-					}
+				  }else{ #echo $_SERVER['HTTP_'.SH_KEY];
+					    if(SHA==true && !isset($_SERVER['HTTP_'.SH_KEY])){
+							die($this->setHeader("401","Unauthorized"));
+						}elseif($_SERVER['HTTP_'.SH_KEY] != SH_VALUE){
+							die($this->setHeader("401","Unable to verify your token Value."));	
+						}
+						
+				 }
 				}else{
 						die($this->setHeader("400","Bad Request"));
 				}

@@ -63,6 +63,69 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 		}
 		#die;
 	}
+	public function db_routes(){ #$datas = $this->db->select("tbl_routes","*");
+		$callStack = [];
+		if(DB_STATUS == true){
+			$datas = $this->db->select("tbl_routes","*",["status"=>"1"]);
+			foreach($datas as $stack){
+				$callStack[$stack['route']] = 'cms::'.$stack['type'];
+			}
+			return $callStack;	
+		}else{
+			die($this->setHeader("500","Enble DB_STATUS in config.php"));
+		}
+	}
+	public function getDynamicContent($url,$table){ #$datas = $this->db->select("tbl_routes","*");
+		$checkTypes = array('page'=>"tbl_pages",'blog'=>"tbl_blogs",'service'=>"tbl_service");
+		$datas = $this->db->query("SELECT p.title,p.content,p.when_created,p.when_updated FROM tbl_routes r INNER JOIN `".$checkTypes[$table]."` p ON r.route_id=p.route_id WHERE r.route = '".$url."' ")->fetchAll();
+		return $datas[0];
+	}
+	public function db_page(){ #$datas = $this->db->select("tbl_routes","*");
+		$callStack = [];
+		$datas = $this->db->query("SELECT * FROM tbl_routes r INNER JOIN tbl_pages p ON r.route_id=p.route_id")->fetchAll();
+		foreach($datas as $stack){
+			$callStack[$stack['route']] = array('cms::'.$stack['type'],$stack);
+		} #echo 'running';
+		return $callStack;
+	}
+	public function db_service(){ #$datas = $this->db->select("tbl_routes","*");
+		$callStack = [];
+		$datas = $this->db->query("SELECT * FROM tbl_routes r INNER JOIN tbl_service p ON r.route_id=p.route_id")->fetchAll();
+		foreach($datas as $stack){
+			$callStack[$stack['route']] = array('cms::'.$stack['type'],$stack);
+		}
+		return $callStack;
+	}
+	public function db_blog(){ 
+		$callStack = [];
+		$datas = $this->db->query("SELECT * FROM tbl_routes r INNER JOIN tbl_blogs p ON r.route_id=p.route_id")->fetchAll();
+		foreach($datas as $stack){
+			$callStack[$stack['route']] = array('cms::'.$stack['type'],$stack);
+		}
+		return $callStack;
+	}
+	public function droutes($target=NULL,$callback=false){ # CMS
+		$pre = (filter_var($target, FILTER_SANITIZE_URL));
+		if($pre!='' && $callback==true){  # multiple url calls			
+			
+			$splitter = explode("/",$pre);
+			$method = $splitter[0]; $addSlash = (isset($splitter[1]) && $splitter[1]!='')?'/':'';
+			
+			$callback = $this->db_routes();
+			array_shift($splitter);
+			$preUrl = $addSlash.implode("/",$splitter); #die;
+			foreach($callback as $url=>$call_function){
+				$subUrl = (filter_var($url, FILTER_SANITIZE_URL));
+				if($method == 'PAGE'){
+					if($this->http_method == 'GET' || $this->http_method == 'POST' && $callback!=NULL) self::switchPage($preUrl.'/'.$subUrl,$call_function,false);
+				 }else{
+					if($this->http_method == $method && $callback!=NULL) self::switchPage($preUrl.'/'.$subUrl,$call_function);
+				 }
+			 }
+						 
+		}
+		
+	}
 	public function get($target=NULL,$callback=NULL){
 		$argUrl = (filter_var($target, FILTER_SANITIZE_URL));
 		if($this->http_method == 'GET' && $callback!=NULL) self::switchPage($argUrl,$callback);
@@ -94,6 +157,18 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 		// set headder & status
 		
 	}
+	public function clean_url($str, $replace=array(), $delimiter='-') {
+		if( !empty($replace) ) {
+		 $str = str_replace((array)$replace, ' ', $str);
+		}
+	   
+		$clean = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
+		$clean = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $clean);
+		$clean = strtolower(trim($clean, '-'));
+		$clean = preg_replace("/[\/_|+ -]+/", $delimiter, $clean);
+	   
+		return $clean;
+   }
 	public function file_save($file_path,$file_stream){
 		if($file_path != "" && $file_stream != ""){
 			$explode = explode(";base64,",$file_stream); # ;base64,
@@ -136,7 +211,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 	private function switchPage($argUrl,$callback,$check_auth=true){
 		if(isset($this->route_url[$this->http_method]) && in_array($argUrl,$this->route_url[$this->http_method])){
 			die($this->setHeader("500",$this->http_method.': Duplicate URL called '.$argUrl.' multiple times called '));
-		}else{
+		}else{ 
 			$this->route_url[$this->http_method][] = $argUrl;
 			switch($argUrl){
 				case self::getCurrentUri(): 
@@ -164,22 +239,50 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 						$call = $this->access;
 						if(is_string($call)){ # Routes
 							$splitC = explode('::',$call);
-							if(count($splitC) == 2){ 
-								$controller = $splitC[0]; $method = $splitC[1];
-								if(file_exists(CONTROLLER_PATH.$controller.'.php')){
-									require_once CONTROLLER_PATH.$controller.'.php';
-									if (method_exists($controller,$method)){
-										$obj = new $controller;
-										$obj->$method();
-										#call_user_func($call);
+							if($splitC[0] == 'cms'){ # CMS Process
+									$cmsFile = CMS_PATH.$splitC[1].'.php';
+									if($splitC[1] == 'service'){
+										$datas = self::getDynamicContent(substr(self::getCurrentUri(), 1),$splitC[1]);
+										$this->json($datas);										
 									}else{
-										die($this->setHeader("500","Bad format of calling method"));
+										if(file_exists($cmsFile)){
+											$datas = self::getDynamicContent(substr(self::getCurrentUri(), 1),$splitC[1]);
+											extract($datas);
+											require_once $cmsFile; die;
+										}
 									}
-								}else{
-									die($this->setHeader("500","Bad format of calling controller"));
-								}
+							}elseif(count($splitC) == 2){ 
+								$controller = $splitC[0]; $method = $splitC[1];
+								
+									if(file_exists(CONTROLLER_PATH.$controller.'.php')){
+										require_once CONTROLLER_PATH.$controller.'.php';
+										if (method_exists($controller,$method)){
+											$obj = new $controller;
+											$obj->$method();
+											#call_user_func($call);
+										}else{
+											die($this->setHeader("500","Bad format of calling method"));
+										}
+									}else{
+										die($this->setHeader("500","Bad format of calling controller"));
+									}
+								
 							}else{
 									die($this->setHeader("500","Bad format of calling controller"));
+							}
+						}elseif(is_array($call)){ # Check $splitC[0] cms::page or normal
+							$splitC = explode('::',$call[0]);
+							
+							if($splitC[0] == 'cms'){ # CMS Process
+									$cmsFile = CMS_PATH.$splitC[1].'.php';
+									if($splitC[1] == 'service'){
+										$this->json($call[1]);
+									}else{
+										if(file_exists($cmsFile)){
+											#extract($call[1]);
+											require_once $cmsFile; die;
+										}	
+									}
 							}
 						}else{ # Individual
 							$call( new Http() );
@@ -198,6 +301,12 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			break;
 			default:
 			
+		}
+	}
+	public function controller($controller=NULL){
+		if(file_exists(CONTROLLER_PATH.$controller.'.php')){
+			require_once CONTROLLER_PATH.$controller.'.php';
+			if(class_exists($controller)) return new $controller;
 		}
 	}
 	public function model($model=NULL){

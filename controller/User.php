@@ -1,9 +1,9 @@
 <?php
-class User{ 
+class User{
 	public function insert(){
 		Http::library('Demo')->a();
 	}	
-	public function update(){
+	public function update(){ 
 		echo 'Update';
 	}
 	public function delete(){

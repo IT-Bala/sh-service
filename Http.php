@@ -158,16 +158,17 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 		
 	}
 	public function clean_url($str, $replace=array(), $delimiter='-') {
-		if( !empty($replace) ) {
-		 $str = str_replace((array)$replace, ' ', $str);
+		if($str != ''){
+			if( !empty($replace) ) {
+				$str = str_replace((array)$replace, ' ', $str);
+			   }	   
+			   $clean = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
+			   $clean = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $clean);
+			   $clean = strtolower(trim($clean, '-'));
+			   $clean = preg_replace("/[\/_|+ -]+/", $delimiter, $clean);
+			  
+			   return $clean;	
 		}
-	   
-		$clean = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
-		$clean = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $clean);
-		$clean = strtolower(trim($clean, '-'));
-		$clean = preg_replace("/[\/_|+ -]+/", $delimiter, $clean);
-	   
-		return $clean;
    }
 	public function file_save($file_path,$file_stream){
 		if($file_path != "" && $file_stream != ""){

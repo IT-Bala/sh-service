@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Feb 16, 2017 at 04:10 PM
+-- Generation Time: Feb 16, 2017 at 05:17 PM
 -- Server version: 5.7.17
 -- PHP Version: 5.5.9-1ubuntu4.21
 
@@ -34,15 +34,9 @@ CREATE TABLE IF NOT EXISTS `tbl_blogs` (
   `status` enum('0','1','2') NOT NULL DEFAULT '1' COMMENT '0=inactice,1=active,2=removed',
   `when_created` datetime NOT NULL,
   `when_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`blog_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
-
---
--- Dumping data for table `tbl_blogs`
---
-
-INSERT INTO `tbl_blogs` (`blog_id`, `route_id`, `title`, `content`, `status`, `when_created`, `when_updated`) VALUES
-(1, 4, 'Welcome to blog', 'Test BLog', '1', '2017-02-16 03:33:00', '2017-02-16 10:03:34');
+  PRIMARY KEY (`blog_id`),
+  KEY `route_id` (`route_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -58,17 +52,9 @@ CREATE TABLE IF NOT EXISTS `tbl_pages` (
   `status` enum('0','1','2') DEFAULT '1' COMMENT '0=inactice,1=active,2=removed',
   `when_created` datetime NOT NULL,
   `when_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`page_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
-
---
--- Dumping data for table `tbl_pages`
---
-
-INSERT INTO `tbl_pages` (`page_id`, `route_id`, `title`, `content`, `status`, `when_created`, `when_updated`) VALUES
-(1, 1, 'Welcome to sh', 'Welcome to sh framework', '1', '2017-02-16 11:52:00', '2017-02-16 06:23:02'),
-(2, 2, 'Welcome', 'Welcome content', '1', '2017-02-16 12:28:00', '2017-02-16 06:58:19'),
-(3, 6, 'Test Admin', 'Welcome to test admin page', '1', '2017-02-16 16:03:21', '2017-02-16 10:33:21');
+  PRIMARY KEY (`page_id`),
+  KEY `route_id` (`route_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -84,18 +70,7 @@ CREATE TABLE IF NOT EXISTS `tbl_routes` (
   `when_created` datetime NOT NULL,
   `when_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`route_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
-
---
--- Dumping data for table `tbl_routes`
---
-
-INSERT INTO `tbl_routes` (`route_id`, `type`, `route`, `status`, `when_created`, `when_updated`) VALUES
-(1, 'page', 'welcome-sh', '1', '2017-02-16 11:52:00', '2017-02-16 08:44:30'),
-(2, 'page', 'welcome', '1', '2017-02-16 12:27:00', '2017-02-16 06:57:51'),
-(3, 'service', 'cms-json', '1', '2017-02-16 12:57:00', '2017-02-16 07:27:20'),
-(4, 'blog', 'blog', '1', '2017-02-16 03:32:00', '2017-02-16 10:03:07'),
-(6, 'page', 'test-admin', '1', '2017-02-16 16:03:21', '2017-02-16 10:33:21');
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -111,15 +86,9 @@ CREATE TABLE IF NOT EXISTS `tbl_service` (
   `status` enum('0','1','2') NOT NULL DEFAULT '1' COMMENT '0=inactice,1=active,2=removed',
   `when_created` datetime NOT NULL,
   `when_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`service_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
-
---
--- Dumping data for table `tbl_service`
---
-
-INSERT INTO `tbl_service` (`service_id`, `route_id`, `title`, `content`, `status`, `when_created`, `when_updated`) VALUES
-(1, 3, 'CMS - JSON', 'Welcome to CMS JSON', '1', '2017-02-16 12:58:00', '2017-02-16 07:28:15');
+  PRIMARY KEY (`service_id`),
+  KEY `route_id` (`route_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -156,6 +125,28 @@ INSERT INTO `tbl_users` (`user_id`, `first_name`, `last_name`, `username`, `phon
 (2, 'bala', 'sundar', 'bala', '98724423893', 'bala@kutung.com', '2016-10-01', 'chennai', 1, '2016-10-26 05:40:53'),
 (3, 'Ragav', 'Khan', 'Ragavkhan', '98347598437', 'ragavkhan@gmail.com', '2016-10-01', 'Adyar', 1, '2016-10-26 05:42:58'),
 (4, 'Prabha1', 'Karan', 'prabha', '34985743877', 'prabha@gmail.com', '2016-10-15', 'Chennai', 1, '2016-10-26 05:42:58');
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `tbl_blogs`
+--
+ALTER TABLE `tbl_blogs`
+  ADD CONSTRAINT `tbl_blogs_ibfk_1` FOREIGN KEY (`route_id`) REFERENCES `tbl_routes` (`route_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `tbl_pages`
+--
+ALTER TABLE `tbl_pages`
+  ADD CONSTRAINT `tbl_pages_ibfk_1` FOREIGN KEY (`page_id`) REFERENCES `tbl_routes` (`route_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `tbl_service`
+--
+ALTER TABLE `tbl_service`
+  ADD CONSTRAINT `tbl_service_ibfk_1` FOREIGN KEY (`route_id`) REFERENCES `tbl_routes` (`route_id`) ON DELETE CASCADE;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

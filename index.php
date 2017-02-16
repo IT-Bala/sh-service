@@ -18,5 +18,5 @@ $app->page('/home',function($app){
     $app->html('home');
 });
 
-$app->run('sh'); # Extender
+$app->run(['sh','admin']); # Extender
 

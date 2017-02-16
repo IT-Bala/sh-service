@@ -14,7 +14,7 @@ $app->get('/',function($app){
 });
 
 # CMS Routes
-$app->droutes('PAGE/',true); # check routes from database
+#$app->droutes('PAGE/',true); # check routes from database
 
 $app->page('/home',function($app){
     $app->html('home');

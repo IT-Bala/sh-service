@@ -8,11 +8,6 @@
                 "url": "https://github.com/phpbala/sh-service/archive/master.zip",
                 "type": "zip"
             },
-    "source": {
-                    "url": "https://github.com/phpbala/sh-service",
-                    "type": "git",
-                    "reference": "phpbala/sh-service/"
-                },
     "support": {
         "issues": "https://github.com/phpbala/sh-service/issues",
         "source": "https://github.com/phpbala/sh-service"

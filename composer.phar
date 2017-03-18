@@ -1,5 +1,0 @@
-{
-    "require": {
-        "sh-service/sh-service": "1.1.1"
-    }
-}

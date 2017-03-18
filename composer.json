@@ -1,4 +1,8 @@
 {
+    "name": "sh-service/sh-service",
+    "description": "The sh-service web service small http.",
+    "keywords": ["framework", "sh-service"],
+    "type": "project",
     "require": {
         "sh-service/sh-service": "1.1.1"
     }

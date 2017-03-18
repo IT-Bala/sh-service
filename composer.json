@@ -1,8 +1,13 @@
 {
-    "name": "sh-service/sh-service",
-    "description": "The sh-service web service small http.",
+    "name": "phpbala/sh-service",
+    "description": "The sh-service Framework.",
     "keywords": ["framework", "sh-service"],
-    "type": "project",
+    "license": "MIT",
+    "homepage": "https://github.com/phpbala/sh-service",
+    "support": {
+        "issues": "https://github.com/phpbala/sh-service/issues",
+        "source": "https://github.com/phpbala/sh-service"
+    },
     "authors": [
         {
             "name": "phpbala",

@@ -3,7 +3,7 @@
     "description": "The sh-service Framework.",
     "keywords": ["framework", "sh-service"],
     "license": "MIT",
-    "homepage": "https://github.com/phpbala/sh-service",
+    "type": "project",
     "support": {
         "issues": "https://github.com/phpbala/sh-service/issues",
         "source": "https://github.com/phpbala/sh-service"
@@ -17,5 +17,9 @@
     "require": {
         "php": ">=5.6.4",
         "phpbala/sh-service": "*"
+    } ,
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true
     }
 }

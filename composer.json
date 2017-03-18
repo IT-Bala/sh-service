@@ -13,24 +13,7 @@
             "name": "phpbala",
             "email": "32deva@phpbala.in"
         }
-    ],
-    "autoload": {
-        "classmap": [
-            "database"
-        ],
-        "psr-4": {
-            "App\\": "app/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-        }
-    },
-    "require": {
-        "php": ">=5.6.4",
-        "phpbala/sh-service": "*"
-    } ,
+    ],    
     "config": {
         "preferred-install": "dist",
         "sort-packages": true

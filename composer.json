@@ -15,5 +15,12 @@
     ],    
     "require": {
         "php": ">=5.6.4"
+    },
+    "extra": {
+        "installer-paths": {
+            "ckeditor": ["ckeditor/ckeditor"],
+            "kcfinder": ["kcfinder"]
+        }
     }
+    
 }

@@ -3,10 +3,6 @@
     "description": "The sh-service Framework.",
     "keywords": ["framework", "sh-service"],
     "license": "MIT",
-    "dist": {
-                "url": "https://github.com/phpbala/sh-service/archive/master.zip",
-                "type": "zip"
-            },
     "authors": [
         {
             "name": "phpbala",
@@ -15,12 +11,5 @@
     ],    
     "require": {
         "php": ">=5.6.4"
-    },
-    "extra": {
-        "installer-paths": {
-            "ckeditor": ["ckeditor/ckeditor"],
-            "kcfinder": ["kcfinder"]
-        }
     }
-    
 }

@@ -3,7 +3,34 @@
     "description": "The sh-service web service small http.",
     "keywords": ["framework", "sh-service"],
     "type": "project",
+    "authors": [
+        {
+            "name": "phpbala",
+            "email": "32deva@phpbala.in"
+        }
+    ],
     "require": {
-        "sh-service/sh-service": "1.1.1"
+        "php": ">=5.6.4",
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
+        "doctrine/inflector": "~1.0",
+        "erusev/parsedown": "~1.6",
+        "league/flysystem": "~1.0",
+        "monolog/monolog": "~1.11",
+        "mtdowling/cron-expression": "~1.0",
+        "nesbot/carbon": "~1.20",
+        "paragonie/random_compat": "~1.4|~2.0",
+        "ramsey/uuid": "~3.0",
+        "swiftmailer/swiftmailer": "~5.4",
+        "symfony/console": "~3.2",
+        "symfony/debug": "~3.2",
+        "symfony/finder": "~3.2",
+        "symfony/http-foundation": "~3.2",
+        "symfony/http-kernel": "~3.2",
+        "symfony/process": "~3.2",
+        "symfony/routing": "~3.2",
+        "symfony/var-dumper": "~3.2",
+        "tijsverkoyen/css-to-inline-styles": "~2.2",
+        "vlucas/phpdotenv": "~2.2"
     }
 }

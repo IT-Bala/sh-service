@@ -3,15 +3,10 @@
     "description": "The sh-service Framework.",
     "keywords": ["framework", "sh-service"],
     "license": "MIT",
-    "type": "project",
     "dist": {
                 "url": "https://github.com/phpbala/sh-service/archive/master.zip",
                 "type": "zip"
             },
-    "support": {
-        "issues": "https://github.com/phpbala/sh-service/issues",
-        "source": "https://github.com/phpbala/sh-service"
-    },
     "authors": [
         {
             "name": "phpbala",

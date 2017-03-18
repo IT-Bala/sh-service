@@ -13,9 +13,5 @@
             "name": "phpbala",
             "email": "32deva@phpbala.in"
         }
-    ],    
-    "config": {
-        "preferred-install": "dist",
-        "sort-packages": true
-    }
+    ]
 }

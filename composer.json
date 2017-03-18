@@ -4,6 +4,15 @@
     "keywords": ["framework", "sh-service"],
     "license": "MIT",
     "type": "project",
+    "dist": {
+                "url": "https://github.com/phpbala/sh-service/archive/master.zip",
+                "type": "zip"
+            },
+    "source": {
+                    "url": "https://github.com/phpbala/sh-service",
+                    "type": "git",
+                    "reference": "phpbala/sh-service/"
+                },
     "support": {
         "issues": "https://github.com/phpbala/sh-service/issues",
         "source": "https://github.com/phpbala/sh-service"
@@ -16,17 +25,5 @@
     ],    
     "require": {
         "php": ">=5.6.4"
-    },
-    "autoload": {
-        "classmap": [
-            "controller",
-            "dbc",
-            "docs",
-            "extender",
-            "html",
-            "library",
-            "model"
-        ]
-    },
-    "minimum-stability": "dev"
+    }
 }

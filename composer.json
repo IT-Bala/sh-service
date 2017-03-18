@@ -16,5 +16,17 @@
     ],    
     "require": {
         "php": ">=5.6.4"
-    }
+    },
+    "autoload": {
+        "classmap": [
+            "controller",
+            "dbc",
+            "docs",
+            "extender",
+            "html",
+            "library",
+            "model"
+        ]
+    },
+    "minimum-stability": "dev"
 }

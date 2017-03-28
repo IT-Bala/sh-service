@@ -16,7 +16,7 @@
         },
         {
             "type": "path",
-            "url": "../../devframe",
+            "url": "./",
             "options": {
                 "symlink": false
             }

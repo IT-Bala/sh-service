@@ -9,17 +9,13 @@
             "email": "32deva@phpbala.in"
         }
     ],
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.0-dev"
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/phpbala/sh-service"
         }
-    },
+    ],
     "require": {
         "php": ">=5.6.4"
-    },
-    "utils": "dev-development",
-    
-    "config": {
-        "sort-packages": true
     }
 }

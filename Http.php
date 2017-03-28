@@ -41,7 +41,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 				$subUrl = (filter_var($url, FILTER_SANITIZE_URL));
 				if($method == 'PAGE'){
 					if($this->http_method == 'GET' || $this->http_method == 'POST' && $callback!=NULL) self::switchPage($preUrl.'/'.$subUrl,$call_function,false);
-				 }else{
+				 }else{ 
 					if($this->http_method == $method && $callback!=NULL) self::switchPage($preUrl.'/'.$subUrl,$call_function);
 				 }
 			 }
@@ -90,7 +90,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 	}
 	public function db_service(){ #$datas = $this->db->select("tbl_routes","*");
 		$callStack = [];
-		$datas = $this->db->query("SELECT * FROM tbl_routes r INNER JOIN tbl_service p ON r.route_id=p.route_id")->fetchAll();
+		$datas = $this->db->query("SELECT p.title,p.content,p.when_created FROM tbl_routes r INNER JOIN tbl_service p ON r.route_id=p.route_id")->fetchAll();
 		foreach($datas as $stack){
 			$callStack[$stack['route']] = array('cms::'.$stack['type'],$stack);
 		}
@@ -202,6 +202,31 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 	private function error(){
 		
 	}
+	private function has_duplicate($array){
+		 $dupe_array = array();
+		 foreach($array as $val){
+		  if(++$dupe_array[$val] > 1){
+		   return true;
+		  }
+		 }
+		 return false;
+	}
+	function array_has_dupes($array) {
+	   return count($array) !== count(array_unique($array));
+	}
+	private function get_colon_vars($str){ $colonVar=[];
+		if(strpos($str,'/:') !==false){
+			$slashColon = explode('/:', $str);
+			array_shift($slashColon);
+			foreach($slashColon as $value){
+				if(strpos($value,'/') !==false){
+					$colonVar[] = strstr($value, '/',true);
+				}else{
+					$colonVar[] = $value;
+				}
+			} 
+		} return $colonVar;
+	}
 	private function getCurrentUri(){
 		$basepath = implode('/', array_slice(explode('/', $_SERVER['SCRIPT_NAME']), 0, -1)) . '/';
 		$uri = substr($_SERVER['REQUEST_URI'], strlen($basepath));
@@ -212,18 +237,34 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 	private function switchPage($argUrl,$callback,$check_auth=true){
 		if(isset($this->route_url[$this->http_method]) && in_array($argUrl,$this->route_url[$this->http_method])){
 			die($this->setHeader("500",$this->http_method.': Duplicate URL called '.$argUrl.' multiple times called '));
-		}else{ 
-			$this->route_url[$this->http_method][] = $argUrl;
-			switch($argUrl){
-				case self::getCurrentUri(): 
-					if($callback!=NULL) $this->access = $callback;
-					$this->check_auth = $check_auth;
-				break;
-				default:
-				
+		}else{
+
+			$this->route_url[$this->http_method][] = ['url'=>$argUrl,'method'=>$this->http_method];
+			
+			if(strpos($argUrl, '/:')!==false){ # dynamic {name} url
+				#$dynamic_route_args=[];
+				$pattern = "@^" . preg_replace('/\\\:[a-zA-Z0-9\_\-]+/', '([a-zA-Z0-9\-\_]+)', preg_quote($argUrl)) . "$@D";
+        		$matches = $route_args = Array();
+        		if(isset($this->http_method) && preg_match($pattern, self::getCurrentUri(), $matches)){
+        			  #array_shift($matches);
+        			  #$this->dynamic_route_args[] = $matches;
+        			  if($callback!=NULL) $this->access = $callback; 
+					  $this->check_auth = $check_auth;
+			    }
+
+			}else{ 
+				switch($argUrl){
+					case self::getCurrentUri(): 
+						if($callback!=NULL) $this->access = $callback;
+						$this->check_auth = $check_auth;
+					break;
+					default:
+					
+				}
 			}
 		}
 	}
+	
 	public function run($sh=NULL){
 		if(is_string($sh)){ $ext_file = EXT_PATH.$sh.'.php';
 			if(file_exists($ext_file)) require_once $ext_file;
@@ -233,71 +274,91 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			}
 		}
 		switch($this->http_method){
-			case ('GET' || 'POST' || 'PUT' || 'DELETE' || 'PAGE'):
-				if(isset($this->route_url[$this->http_method]) && in_array(self::getCurrentUri(),$this->route_url[$this->http_method])){
-				  if((isset($_SERVER['HTTP_'.SH_KEY]) && $_SERVER['HTTP_'.SH_KEY] == SH_VALUE) || SHA==FALSE || $this->check_auth == FALSE){
-						$call = $this->access;
-						if(is_string($call)){ # Routes
-							$splitC = explode('::',$call);
-							if($splitC[0] == 'cms'){ # CMS Process
-									$cmsFile = CMS_PATH.$splitC[1].'.php';
-									if($splitC[1] == 'service'){
-										$datas = self::getDynamicContent(substr(self::getCurrentUri(), 1),$splitC[1]);
-										$this->json($datas);										
-									}else{
-										if(file_exists($cmsFile)){
+			case ('GET' || 'POST' || 'PUT' || 'DELETE' || 'PAGE'): #echo self::getCurrentUri(); print_r($this->route_url[$this->http_method]);
+
+				$routeCount = count($this->route_url[$this->http_method]); $notMatchCount=0;
+				foreach($this->route_url[$this->http_method] as $route){ #echo self::getCurrentUri();#echo $route;
+					$pattern = "@^" . preg_replace('/\\\:[a-zA-Z0-9\_\-]+/', '([a-zA-Z0-9\-\_]+)', preg_quote($route['url'])) . "$@D";
+        			$matches = $route_args = Array();
+
+        			if(isset($this->route_url[$this->http_method]) && $route['method']==$this->http_method && preg_match($pattern, self::getCurrentUri(), $matches)){
+        			  array_shift($matches);
+        			  if(count($matches) > 0){	
+			            	$route_args = array_combine(self::get_colon_vars($route['url']),$matches);
+			            }
+			          #die;
+					  if((isset($_SERVER['HTTP_'.SH_KEY]) && $_SERVER['HTTP_'.SH_KEY] == SH_VALUE) || SHA==FALSE || $this->check_auth == FALSE){
+							$call = $this->access;
+							if(is_string($call)){ # Routes
+								$splitC = explode('::',$call);
+								if($splitC[0] == 'cms'){ # CMS Process
+										$cmsFile = CMS_PATH.$splitC[1].'.php';
+										if($splitC[1] == 'service'){
 											$datas = self::getDynamicContent(substr(self::getCurrentUri(), 1),$splitC[1]);
-											extract($datas);
-											require_once $cmsFile; die;
-										}
-									}
-							}elseif(count($splitC) == 2){ 
-								$controller = $splitC[0]; $method = $splitC[1];
-								
-									if(file_exists(CONTROLLER_PATH.$controller.'.php')){
-										require_once CONTROLLER_PATH.$controller.'.php';
-										if (method_exists($controller,$method)){
-											$obj = new $controller;
-											$obj->$method();
-											#call_user_func($call);
+											$this->json($datas);										
 										}else{
-											die($this->setHeader("500","Bad format of calling method"));
+											if(file_exists($cmsFile)){
+												$datas = self::getDynamicContent(substr(self::getCurrentUri(), 1),$splitC[1]);
+												extract($datas);
+												require_once $cmsFile; die;
+											}
 										}
-									}else{
+								}elseif(count($splitC) == 2){ 
+									$controller = $splitC[0]; $method = $splitC[1];
+									
+										if(file_exists(CONTROLLER_PATH.$controller.'.php')){
+											require_once CONTROLLER_PATH.$controller.'.php';
+											if (method_exists($controller,$method)){
+												$obj = new $controller;
+												$obj->$method();
+												#call_user_func($call);
+											}else{
+												die($this->setHeader("500","Bad format of calling method"));
+											}
+										}else{
+											die($this->setHeader("500","Bad format of calling controller"));
+										}
+									
+								}else{
 										die($this->setHeader("500","Bad format of calling controller"));
-									}
+								}
+							}elseif(is_array($call)){ # Check $splitC[0] cms::page or normal
+								$splitC = explode('::',$call[0]);
 								
-							}else{
-									die($this->setHeader("500","Bad format of calling controller"));
+								if($splitC[0] == 'cms'){ # CMS Process
+										$cmsFile = CMS_PATH.$splitC[1].'.php';
+										if($splitC[1] == 'service'){
+											$this->json($call[1]);
+										}else{
+											if(file_exists($cmsFile)){
+												#extract($call[1]);
+												require_once $cmsFile; die;
+											}	
+										}
+								}
+							}else{ # Individual
+								require_once 'Request.php';
+								require_once 'Response.php';
+								# $Request = (object)$route_args
+								$call( new Http() , $Request = (new Request($route_args)) , $Response=(new Response) );
+								#unset($_GET,$_POST);
 							}
-						}elseif(is_array($call)){ # Check $splitC[0] cms::page or normal
-							$splitC = explode('::',$call[0]);
+					  }else{ #echo $_SERVER['HTTP_'.SH_KEY];
+						    if(SHA==true && !isset($_SERVER['HTTP_'.SH_KEY])){
+								die($this->setHeader("401","Unauthorized"));
+							}elseif($_SERVER['HTTP_'.SH_KEY] != SH_VALUE){
+								die($this->setHeader("401","Unable to verify your token Value."));	
+							}
 							
-							if($splitC[0] == 'cms'){ # CMS Process
-									$cmsFile = CMS_PATH.$splitC[1].'.php';
-									if($splitC[1] == 'service'){
-										$this->json($call[1]);
-									}else{
-										if(file_exists($cmsFile)){
-											#extract($call[1]);
-											require_once $cmsFile; die;
-										}	
-									}
-							}
-						}else{ # Individual
-							$call( new Http() );
-						}
-				  }else{ #echo $_SERVER['HTTP_'.SH_KEY];
-					    if(SHA==true && !isset($_SERVER['HTTP_'.SH_KEY])){
-							die($this->setHeader("401","Unauthorized"));
-						}elseif($_SERVER['HTTP_'.SH_KEY] != SH_VALUE){
-							die($this->setHeader("401","Unable to verify your token Value."));	
-						}
-						
-				 }
-				}else{
-						die($this->setHeader("400","Bad Request"));
-				}
+					 }
+					}else{ 
+						$notMatchCount +=1;
+					}
+					# End Loop
+				} 
+				if($routeCount == $notMatchCount){
+			    	die($this->setHeader("400","Bad Request"));
+			    }
 			break;
 			default:
 			

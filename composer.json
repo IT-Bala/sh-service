@@ -8,26 +8,13 @@
             "name": "phpbala",
             "email": "32deva@phpbala.in"
         }
-    ],
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/phpbala/sh-service.git"
-        },
-        {
-            "type": "path",
-            "url": "./",
-            "options": {
-                "symlink": false
-            }
-        }
-    ],
+    ],    
     "require": {
         "php": ">=5.6.4"
     },
-    "autoload-dev": {
-        "classmap": [
-            "Test.php"
+    "scripts": {
+    "post-package-install": [
+        "php -r \"exec('cp -r /var/www/html/test/vendor/phpbala/sh-service/* /var/www/html/test/');\""
         ]
     },
     "config": {

@@ -25,6 +25,13 @@
     "require": {
         "php": ">=5.6.4"
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    "autoload-dev": {
+        "classmap": [
+            "Test.php"
+        ]
+    },
+    "config": {
+        "preferred-install": "dist"
+    },
+    "minimum-stability": "dev"
 }

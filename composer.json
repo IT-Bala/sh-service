@@ -14,7 +14,7 @@
     },
     "scripts": {
     "post-package-install": [
-        "php -r \"exec('cp -r /var/www/html/test/vendor/phpbala/sh-service/* /var/www/html/test/');\""
+        "php -r \"exec('cp -r /vendor/phpbala/sh-service/* /');\""
         ]
     },
     "config": {

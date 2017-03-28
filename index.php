@@ -1,9 +1,9 @@
 <?php
 error_reporting(E_ALL);
-ini_set("display_errors", 1);
+ini_set("display_errors", -1);
 setlocale(LC_ALL, 'en_US.UTF8');
 #==============================================#
-define("SHA",false); # Small Http::SH Authentication [Don't remove it]
+define("SHA",false); # Small Http::SH Authentication [ Don't remove it ]
 #==============================================#
 require 'vendor/autoload.php';
 

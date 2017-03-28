@@ -12,11 +12,6 @@
     "require": {
         "php": ">=5.6.4"
     },
-    "scripts": {
-    "post-package-install": [
-        "php -r \"exec('cp -r /vendor/phpbala/sh-service/* /');\""
-        ]
-    },
     "config": {
         "preferred-install": "dist"
     },

@@ -29,10 +29,11 @@ Http::page('/admin',function($app){
 		}
     }
 	# Manual Routes
+	#print_r($this->route_url['GET']);
 	$routes = array();
 	if(isset($this->route_url['GET']) && count($this->route_url['GET']) > 0){
 		foreach($this->route_url['GET'] as $route){
-			$routes[] = substr($route, 1);
+			$routes[] = substr($route['url'], 1);
 		}
 	}
 	$data["types"] = array("page","blog","service");

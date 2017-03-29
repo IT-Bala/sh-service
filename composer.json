@@ -3,20 +3,18 @@
     "description": "The sh-service Framework.",
     "keywords": ["framework", "sh-service"],
     "license": "MIT",
+    "type": "project",
     "authors": [
         {
             "name": "phpbala",
             "email": "32deva@phpbala.in"
         }
     ],
-    "repositories": [
-      {
-        "type": "vcs",
-        "url": "https://github.com/phpbala/sh-service"
-      }
-    ],
     "require": {
         "php": ">=5.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~5.7"
     },
     "config": {
         "preferred-install": "dist",

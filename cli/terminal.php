@@ -69,11 +69,11 @@ if(isset($argv[1]) && $argv[1]!=''){
 		}
 
 	}elseif($argv[1] == '-v'){
-			echo "\033[0;32msh-service framework v1.0.0 \033[0m (\033[0;37mDeveloped @ Soava Lab\033[0m) \n";
+			echo clean_color("\033[0;32msh-service framework v1.0.0 \033[0m (\033[0;37mDeveloped @ Soava Lab\033[0m) \n");
 	}elseif($argv[1] == '-h'){
 		require_once 'commands.php';
 	}elseif($argv[1] == 'status'){
-		echo "\033[0;32msh-service is running...\033[0m \n";
+		echo clean_color("\033[0;32msh-service is running...\033[0m \n");
 	}else{
 		echo BAD_FORMAT();
 	}

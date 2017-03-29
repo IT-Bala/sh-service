@@ -19,7 +19,8 @@
         "php": ">=5.4"
     },
     "config": {
-        "preferred-install": "dist"
-    },
-    "minimum-stability": "dev"
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "optimize-autoloader": true
+    }
 }

@@ -8,19 +8,19 @@ if(isset($argv[1]) && $argv[1]!=''){
 				$typeName = strtolower($whatAt[1]);
 				switch ($type) {
 					case 'controller':
-						echo create::controller($typeName);
+						echo clean_color(create::controller($typeName));
 					break;
 					case 'model':
-						echo create::model($typeName);
+						echo clean_color(create::model($typeName));
 					break;
 					case 'library':
-						echo create::library($typeName);
+						echo clean_color(create::library($typeName));
 					break;
 					case 'extender':
-						echo create::extender($typeName);
+						echo clean_color(create::extender($typeName));
 					break;
 					case 'package':
-						echo create::package($typeName);
+						echo clean_color(create::package($typeName));
 					break;
 										
 					default:
@@ -42,19 +42,19 @@ if(isset($argv[1]) && $argv[1]!=''){
 				$typeName = strtolower($whatAt[1]);
 				switch ($type) {
 					case 'controller':
-						echo remove::controller($typeName);
+						echo clean_color(remove::controller($typeName));
 					break;
 					case 'model':
-						echo remove::model($typeName);
+						echo clean_color(remove::model($typeName));
 					break;
 					case 'library':
-						echo remove::library($typeName);
+						echo clean_color(remove::library($typeName));
 					break;
 					case 'extender':
-						echo remove::extender($typeName);
+						echo clean_color(remove::extender($typeName));
 					break;
 					case 'package':
-						echo remove::package($typeName);
+						echo clean_color(remove::package($typeName));
 					break;
 										
 					default:
@@ -82,4 +82,11 @@ if(isset($argv[1]) && $argv[1]!=''){
 }
 function BAD_FORMAT(){
 	return "\033[0;31msh-service bad format command.\033[0m \n";
+}
+function clean_color($str){
+	 $codes = array("\033[0;32m", "\033[0m", "\033[0;31m","\033[0m");
+	 $rcodes = array("","","","");
+	 if(strtoupper(substr(PHP_OS, 0, 3)) != 'LIN'){
+	 	$str = str_replace($codes,$rcodes, $str);
+	 } return $str;
 }

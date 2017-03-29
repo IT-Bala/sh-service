@@ -8,7 +8,13 @@
             "name": "phpbala",
             "email": "32deva@phpbala.in"
         }
-    ],    
+    ],
+    "repositories": [
+      {
+        "type": "vcs",
+        "url": "https://github.com/phpbala/sh-service"
+      }
+    ],
     "require": {
         "php": ">=5.4"
     },

@@ -10,10 +10,3 @@ echo clean_color($colors->getColoredString("library:libraryname	", "green", "") 
 echo clean_color($colors->getColoredString("package:packagename	", "green", "") . "	Create a package\n");
 echo clean_color($colors->getColoredString("extender:extendername	", "green", "") . "	Create a extender\n");
 echo "\n";
-function clean_color($str){
-	 $codes = array("\033[0;32m", "\033[0m", "\033[0;31m","\033[0m");
-	 $rcodes = array("","","","");
-	 if(strtoupper(substr(PHP_OS, 0, 3)) != 'LIN'){
-	 	$str = str_replace($codes,$rcodes, $str);
-	 } return $str;
-}

@@ -68,6 +68,29 @@ if(isset($argv[1]) && $argv[1]!=''){
 			echo BAD_FORMAT();
 		}
 
+	}elseif($argv[1] == 'import'){ require_once 'import.php';
+		$import = new import();
+		if(isset($argv[2]) && $argv[2]!=''){
+			$whatAt = explode(":", $argv[2]);
+			if(count($whatAt) == 2){
+				$type = strtolower($whatAt[0]);
+				$typeName = strtolower($whatAt[1]);
+				switch ($type) {
+					case 'package':
+						echo clean_color($import->package($typeName));
+					break;
+										
+					default:
+						echo BAD_FORMAT();
+					break;
+				}
+			}else{
+				echo BAD_FORMAT();	
+			}
+		}else{
+			echo BAD_FORMAT();
+		}
+
 	}elseif($argv[1] == '-v'){
 			echo clean_color("\033[0;32msh-service framework v1.0.0 \033[0m (\033[0;37mDeveloped @ Soava Lab\033[0m) \n");
 	}elseif($argv[1] == '-h'){

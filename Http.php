@@ -146,7 +146,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 		$argUrl = (filter_var($target, FILTER_SANITIZE_URL));
 		if(($this->http_method == 'GET' || $this->http_method == 'POST') && $callback!=NULL) self::switchPage($argUrl,$callback,false);
 	}
-	private function setHeader($status,$body=""){
+	private static function setHeader($status,$body=""){
 		if($status!=""){
 			header("HTTP/1.1 ".$status."");
 			header("Content-Type: application/json");
@@ -187,10 +187,10 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			return base64_decode($explode[1]);
 		}
 	}
-	public function body(){
+	public static function body(){
 		return json_decode(file_get_contents("php://input"));
 	}
-	public function json($content,$object=false){
+	public static function json($content,$object=false){
 		// application/json
 		if($object==true){
 			return json_decode(Http::setHeader("200",$content));
@@ -266,6 +266,12 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 	}
 	
 	public function run($sh=NULL){
+		# Auto Init Extender
+		if(is_dir('extender/init')){
+			foreach (glob("extender/init/*.php") as $ext_file){
+				if(file_exists($ext_file)) require_once $ext_file;
+			}
+		}
 		if(is_string($sh)){ $ext_file = EXT_PATH.$sh.'.php';
 			if(file_exists($ext_file)) require_once $ext_file;
 		}else if(is_array($sh)){
@@ -388,7 +394,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 				if(file_exists($file)) require_once $file;
 			} return new Http;
 	}
-	public function library($class=NULL,$object=true){ $args = func_get_args();
+	public static function library($class=NULL,$object=true){ $args = func_get_args();
 			if(count($args)>0 && $args[0]!=''){
 				$file = LIBRARY_PATH.$args[0].'.php';
 				if(file_exists($file)) require_once $file;

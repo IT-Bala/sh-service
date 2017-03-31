@@ -146,6 +146,14 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 		$argUrl = (filter_var($target, FILTER_SANITIZE_URL));
 		if(($this->http_method == 'GET' || $this->http_method == 'POST') && $callback!=NULL) self::switchPage($argUrl,$callback,false);
 	}
+	public function url($offset=NULL){
+		$returnUrl = self::getCurrentUri();
+		if($offset!='' && is_integer($offset)){
+			$ex = explode("/", self::getCurrentUri());
+			$returnUrl = (isset($ex[$offset]))?$ex[$offset]:'';
+		}
+		return $returnUrl;
+	}
 	private static function setHeader($status,$body=""){
 		if($status!=""){
 			header("HTTP/1.1 ".$status."");

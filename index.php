@@ -5,7 +5,6 @@ setlocale(LC_ALL, 'en_US.UTF8');
 #==============================================#
 define("SHA",false); # Small Http::SH Authentication [Don't remove it]
 #==============================================#
-require 'autoload.php';
 require 'Http.php';
 
 $app = new Http();

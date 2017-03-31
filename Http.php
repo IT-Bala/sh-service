@@ -376,13 +376,13 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			if(class_exists($controller)) return new $controller;
 		}
 	}
-	public function model($model=NULL){
+	public static function model($model=NULL){
 		if(file_exists(MODEL_PATH.$model.'.php')){
 			require_once MODEL_PATH.$model.'.php';
 			if(class_exists($model)) return new $model;
 		}
 	}
-	public function view($file=NULL,$args=NULL){
+	public static function view($file=NULL,$args=NULL){
 			return self::html($file,$args);
 	}
 	public function html($file=NULL){ $args = func_get_args();

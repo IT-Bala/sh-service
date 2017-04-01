@@ -15,7 +15,7 @@ $app = new Http();
 
 $app->get('/',function($app){ echo $app->json(["Welcome to SH server"]); });
 
-# ============================================== #
+# ====================================== #
 
 i. Call html view file:
 	Http::html('test'); # View file 

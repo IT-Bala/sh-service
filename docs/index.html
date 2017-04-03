@@ -12,7 +12,7 @@
 </head>
 <body>
 <div id="wrapper">
-<h2 align="center">API's User Guide</h2>
+<h2 align="center">Developer Guide</h2>
 <div class="content-left">
 <br><hr><br>
 <h3 align="center">Web Server</h3>
@@ -30,6 +30,10 @@
         });
 	$app->post('/',function($app){
             echo 'Data posting...';
+        });
+    $app->get('/name/:firstname',function($app,$req,$res){
+            #echo $req->firstname;
+            $res->json($req->firstname);
         });
     $app->run();
 </code> 
@@ -237,6 +241,39 @@
 						"username"=>$_POST['username']
 					);
 	echo Curl::delete($url,json_encode($result),true);
+</code> 
+</pre>
+<h3>Command Options</h3>
+<pre>
+<code class="language-php">
+    [ Command Options ]
+
+    php sh create controller:phper
+
+	[ Options ]
+
+	-v , -version						Display the version
+	-h , -help							Command Help
+	-q									Quit
+
+	[ Create Command ]
+	create controller:controllername	Create controller
+	create model:modelname				Create model
+	create library:libraryname			Create library
+	create package:packagename			Create package
+	create extender:extendername		Create extender
+
+	[ Remove Command ]
+	remove controller:controllername	Remove controller
+	remove model:modelname				Remove model
+	remove library:libraryname			Remove library
+	remove package:packagename			Remove package
+	remove extender:extendername		Remove extender
+	remove module:modulename			Remove module
+
+	[ Import Command ]
+	import package:packagename			Import package
+	import module:modulename			Import module
 </code> 
 </pre>
 </div>

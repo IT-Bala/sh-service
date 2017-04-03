@@ -280,6 +280,14 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 				if(file_exists($ext_file)) require_once $ext_file;
 			}
 		}
+		# Modules
+		if(is_dir('modules')){
+			foreach (glob("modules/*",GLOB_ONLYDIR) as $module_folder){
+				foreach (glob($module_folder."/*init.php") as $init_file){
+					if(file_exists($init_file)) require_once $init_file;
+				}
+			}
+		}
 		if(is_string($sh)){ $ext_file = EXT_PATH.$sh.'.php';
 			if(file_exists($ext_file)) require_once $ext_file;
 		}else if(is_array($sh)){
@@ -393,7 +401,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 	public static function view($file=NULL,$args=NULL){
 			return self::html($file,$args);
 	}
-	public function html($file=NULL){ $args = func_get_args();
+	public static function html($file=NULL){ $args = func_get_args();
 			if(count($args)>0 && $args[0]!=''){
 				if(isset($args[1]) && $args[1]!=NULL){ 
 					extract($args[1]);

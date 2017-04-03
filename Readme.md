@@ -2,4 +2,4 @@
 
 SH-Web Service is small & fastest php framework developed by phpbala@2016
 
-<a href="http://phpbala.in/sh/docs">Developer guide</a>
+<a href="http://phpbala.in/sh/docs" target="_blank">Developer guide</a>

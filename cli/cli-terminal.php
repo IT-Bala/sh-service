@@ -16,7 +16,7 @@ class Colors {
 			$this->foreground_colors['light_cyan'] = '1;36';
 			$this->foreground_colors['red'] = '0;31';
 			$this->foreground_colors['light_red'] = '1;31';
-			$this->foreground_colors['purple'] = '0;35';
+			$this->foreground_colors['purple'] = '1;35';
 			$this->foreground_colors['light_purple'] = '1;35';
 			$this->foreground_colors['brown'] = '0;33';
 			$this->foreground_colors['yellow'] = '1;33';

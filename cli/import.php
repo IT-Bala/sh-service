@@ -95,7 +95,7 @@ class import{
 					$msg = "\033[0;31mSorry, Module `".strtolower($fileName)."` is not available. \033[0m \n";
 			}
 		  }else{
-		  			$msg = "\033[0;31mPermission denied. coult't import ".$c_dir."  \033[0m \n";
+		  			$msg = "\033[0;31mPermission denied modules directory. coult't import ".$c_dir."  \033[0m \n";
 		  }
 		}
 		return $msg;

@@ -72,7 +72,7 @@ class import{
 		if(is_dir($module)){
 		  	$msg = "\033[0;31m".$fileName." module already exist.\033[0m \n";
 		}else{ 
-		  //if(!is_dir($c_dir) mkdir($c_dir,777);
+		  if(!is_dir($c_dir)) mkdir($c_dir,777);
 		  if(is_dir($c_dir) && is_writable($c_dir)){
 		  	# Download from server & extract
 			$url = $this->server_uri.$c_dir."/".strtolower($fileName).".zip";

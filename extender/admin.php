@@ -2,7 +2,7 @@
 if(!defined("SHA")) die("Access denied!");
 
 Http::page('/admin',function($app){
-	
+	if(DB_STATUS == false) die(Http::json(["Database Connection failed"]));
 	if(isset($_POST['save'])){
 		$routes = explode(',',$_POST['routes']);
 		if($_POST['title'] != '' && $_POST['content']!=''){

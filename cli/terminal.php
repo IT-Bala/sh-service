@@ -134,7 +134,7 @@ function BAD_FORMAT(){
 	return "\033[0;31msh-service bad format command.\033[0m \n";
 }
 function clean_color($str){
-	 $codes = array("\033[0;32m", "\033[0m", "\033[0;31m","\033[0m","\033[1;33m","\033[0;37m","\033[0;0;33m");
+	 $codes = array("\033[0;32m", "\033[0m", "\033[0;31m","\033[0m","\033[1;33m","\033[0;37m","\033[0;33m");
 	 $rcodes = array("","","","","","","");
 	 if(strtoupper(substr(PHP_OS, 0, 3)) != 'LIN'){
 	 	$str = str_replace($codes,$rcodes, $str);

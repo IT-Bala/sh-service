@@ -5,7 +5,9 @@ setlocale(LC_ALL, 'en_US.UTF8');
 #==============================================#
 define("SHA",false); # Small Http::SH Authentication [ Don't remove it ]
 #==============================================#
+# Notes : if you create a project via composer
 require 'vendor/autoload.php';
+# Notes : if you download directly no need to include above file : vendor/autoload.php
 
 require 'Http.php';
 
@@ -22,22 +24,5 @@ $app->get('/name/:firstname',function($app,$req,$res){
 $app->page('/home',function($app){
     $app->html('home');
 });
-# To Access Package
-/* use \package\Test;
-$app->get('/testing',function($app){
-    $obj = new Test();
-});*/
-
-$app->get('/third_party_api',function($app){ # To Access 3rd party API
-		#ACCESS THIRD PARTY API#
-		#define("API_KEY", "API");   # If no need remove it
-		#define("API_TOKEN", "SHA"); # If no need remove it 
-		#ACCESS THIRD PARTY API#
-		# $obj = Curl::get('https://localhost/sh-service/'); 	  # object
-		# echo   Curl::get('https://localhost/sh-service/',true); # raw
-});
-# CMS Routes
-#$app->droutes('PAGE/',true); # check routes from database
 
 $app->run(['sh','admin']); # Extender
-

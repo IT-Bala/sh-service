@@ -1,22 +1,48 @@
 <?php
 if(!defined("SHA")) die("Access denied!");
-require_once 'dbc/dbc.php';
+#require_once 'dbc/dbc.php'; # Medoo third party
 require 'autoload.php';
 require_once 'Input.php';
 require_once 'config.php';
+require_once 'dbc/DB.php';
 class Http{ var $http_method; public $db; protected $route_url=[]; public $next_object=[];
 	public function Http(){ set_error_handler('getError');
 		$this->http_method = $_SERVER['REQUEST_METHOD'];
 		try{
 			if(DB_STATUS == true){
-				$this->db = new dbc([
+				/*$this->db = new dbc([
 					'database_type' => DATABASE_TYPE,
 					'database_name' => DATABASE,
 					'server' => HOST,
 					'username' => USERNAME,
 					'password' => PASSWORD,
 					'charset' => 'utf8'
-				]);
+				]); # Medoo third party */ 
+				$active_group = 'default';
+				$query_builder = TRUE;
+
+				$db['default'] = array(
+					'dsn'	=> DNS,
+					'hostname' => HOST,
+					'username' => USERNAME,
+					'password' => PASSWORD,
+					'database' => DATABASE,
+					'dbdriver' => DATABASE_TYPE,
+					'dbprefix' => DATABASE_PREFIX,
+					'pconnect' => FALSE,
+					'db_debug' => (ENVIRONMENT !== 'production'),
+					'cache_on' => FALSE,
+					'cachedir' => '',
+					'char_set' => 'utf8',
+					'dbcollat' => 'utf8_general_ci',
+					'swap_pre' => '',
+					'encrypt' => FALSE,
+					'compress' => FALSE,
+					'stricton' => FALSE,
+					'failover' => array(),
+					'save_queries' => TRUE
+				);
+				$this->db = self::db();#DBC($db['default']);
 			}
 		}catch(Exception $e){
 			if($e){
@@ -362,7 +388,8 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 								require_once 'Request.php';
 								require_once 'Response.php';
 								# $Request = (object)$route_args
-								$call( new Http() , $Request = (new Request($route_args)) , $Response=(new Response) );
+
+								$call( new Http() , $Request = (new Request($route_args)), $Response=(new Response));
 								#unset($_GET,$_POST);
 							}
 					  }else{ #echo $_SERVER['HTTP_'.SH_KEY];
@@ -417,9 +444,35 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 				if(class_exists($args[0]) && $object==true) return new $args[0];
 			}
 	}
-	public function db(){
+	public static function db(){
 		if(DB_STATUS == true){
-			return $this->db;
+			
+			$active_group = 'default';
+			$query_builder = TRUE;
+
+			$db['default'] = array(
+				'dsn'	=> DNS,
+				'hostname' => HOST,
+				'username' => USERNAME,
+				'password' => PASSWORD,
+				'database' => DATABASE,
+				'dbdriver' => DATABASE_TYPE,
+				'dbprefix' => DATABASE_PREFIX,
+				'pconnect' => FALSE,
+				'db_debug' => (ENVIRONMENT !== 'production'),
+				'cache_on' => FALSE,
+				'cachedir' => '',
+				'char_set' => 'utf8',
+				'dbcollat' => 'utf8_general_ci',
+				'swap_pre' => '',
+				'encrypt' => FALSE,
+				'compress' => FALSE,
+				'stricton' => FALSE,
+				'failover' => array(),
+				'save_queries' => TRUE
+			);
+			return DBC($db['default']);
+
 		}else{ die($this->setHeader("500","Enble DB_STATUS in config.php")); }
 	}
 }

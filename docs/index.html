@@ -80,6 +80,8 @@
 <code class="language-php">
 	# Inside of html folder create filename.php
 	Http::html('test'); # View file 
+	# OR
+	$app = new Http;
 	$app->html('header')->html('test'); # html/test.php file include
 	$app->view('test');
 </code> 
@@ -89,6 +91,8 @@
 <code class="language-php">
 	# Inside of model folder create classname.php
 	Http::model('test')->func(); # running
+	# OR
+	$app = new Http;
 	$app->model('test'); # html/test.php file include
 </code> 
 </pre>
@@ -96,6 +100,8 @@
 <pre>
 <code class="language-php">
 	# Inside of controller folder create classname.php
+	$app->get('/test','Class::Method');
+	# OR
 	$app->routes('POST /parent_url',['sub_url'=>'Class::Method']);
 	$app->routes('POST /user',['update'=>'User::update','delete'=>'User::delete']);
 </code> 
@@ -115,7 +121,7 @@
 <pre>
 <code class="language-php">	
 	$file = $app->body();
-	$file_path = 'uploads/'.time().'-filename'; # Without extension because file map .MP3,.MP4 etc.
+	$file_path = 'uploads/'.time().'-filename'; # Without extension because file may be .MP3,.MP4 etc.
 	$app->file_save($file_path,$file->photo);
 </code> 
 </pre>
@@ -123,17 +129,24 @@
 <pre>
 <code class="language-php">	
 	$file = $app->body();
+
+	# to get extension
+
+    $explode 	  = explode(";base64,",$file->photo); # ;base64,
+	$data		  = explode("/",$explode[0]);
+	$extension    = $data[1];
+
 	$app->library('ImageResize',false);
 	$image = ImageResize::createFromString($app->file_decode($file->photo));	
 	$image->scale(50); # $image->resize(800, 600); # $image->crop(200, 200);
-	$image->save('uploads/image_string.jpg');	
-					[OR]
+	$image->save('uploads/image_string.'.$extension);	
+					#[OR]
 	$app->library('ImageResize',false);
-	$image = new ImageResize('uploads/image.jpg');	
+	$image = new ImageResize('uploads/image.jpg');
 	$image->scale(50); # $image->resize(800, 600); # $image->crop(200, 200);
 	$image->save('uploads/image.jpg');
-    
-    Reference : https://github.com/eventviva/php-image-resize
+
+	Reference : https://github.com/eventviva/php-image-resize
 </code> 
 </pre>
 <h3>Form inputs</h3>
@@ -286,15 +299,3 @@
 </div>
 </body>
 </html>
-
-<!--
-
-Language 	    Class
-HTML 	        language-markup
-CSS 	        language-css
-JavaScript 	    language-javascript
-CoffeeScript 	language-coffeescript
-PHP 	        language-php
-Ruby 	        language-ruby
-Go 	            language-go 
--->

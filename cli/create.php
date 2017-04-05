@@ -50,7 +50,7 @@ class create{
 		return $msg;
 	}
 	public function extender($fileName){ $msg=BAD_FORMAT(); $c_dir = 'extender'; $file = $c_dir.'/'.ucfirst($fileName.'.php');
-		$message = "<?php\nif(!defined('SHA')) die('Access denied!');\n\n/*Http::get('/test',function(){\n echo 'Test page is running...';\n}*/\n?>";
+		$message = "<?php\nif(!defined('SHA')) die('Access denied!');\n\n/*Http::get('/test',function(){\n echo 'Test page is running...';\n});*/\n?>";
 		if (file_exists($file)){
 		  	$msg = "\033[0;31m".ucfirst($fileName)." ".$c_dir." already exist.\033[0m \n";
 		} else {

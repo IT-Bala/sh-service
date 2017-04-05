@@ -96,6 +96,23 @@ if(isset($argv[1]) && $argv[1]!=''){
 			echo BAD_FORMAT();
 		}
 
+	}elseif(strtolower($argv[1]) == 'compile'){ require_once 'compile.php';
+		$compile = new compile();
+		if(isset($argv[2]) && $argv[2]!=''){						
+				$type = $argv[2];
+				switch ($type) {
+					case 'extender':
+						echo clean_color($compile->extender());
+					break;			
+					default:
+						echo BAD_FORMAT();
+					break;
+				}
+			
+		}else{
+			echo BAD_FORMAT();
+		}
+
 	}elseif($argv[1] == 'curl'){ require_once 'curl.php';
 		$curl = new curl();
 		if(isset($argv[2]) && $argv[2]!=''){

@@ -25,7 +25,7 @@ Http::page('/admin',function($app){
 							]);
 				echo "Submitted successfuly!";
 		  }else{
-				echo $app->clean_url($_POST['title'])]." route already exist!";
+				echo $app->clean_url($_POST['title'])." route already exist!";
 		  }	
 		}else{
 				echo "Fill out required fields.";

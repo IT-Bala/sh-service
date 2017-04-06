@@ -1697,13 +1697,42 @@ abstract class CI_DB_driver {
 	/**
 	 * Display an error message
 	 *
-	 * @param	string	the error message
+	 * @param	string  the error message
 	 * @param	string	any "swap" values
 	 * @param	bool	whether to localize the message
 	 * @return	string	sends the application/views/errors/error_db.php template
 	 */
 	public function display_error($error = '', $swap = '', $native = FALSE)
 	{
+
+		$trace = debug_backtrace(); 
+		$i=0;
+		foreach ($trace as $call)
+		{
+
+			#print_r($call['args']);
+
+			if (isset($call['file'], $call['class']))
+			{
+				// We'll need this on Windows, as APPPATH and BASEPATH will always use forward slashes
+				if (DIRECTORY_SEPARATOR !== '/')
+				{
+					$call['file'] = str_replace('\\', '/', $call['file']);
+				}
+
+				if (strpos($call['file'], BASEPATH.'database') === FALSE && strpos($call['class'], 'Loader') === FALSE)
+				{
+					// Found it - use a relative path for safety
+					$message[] = 'Filename: '.str_replace(array(APPPATH, BASEPATH), '', $call['file']);
+					$message[] = 'Line Number: '.$call['line'];
+					break;
+
+				}
+			} $i++;
+		}
+		#$error = array_push($message,$error);
+		db_error($error,$message);
+
 		$LANG =& load_class('Lang', 'core');
 		$LANG->load('db');
 

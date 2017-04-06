@@ -3,17 +3,20 @@ if(!defined("SHA")) die("Access denied!");
 
 Http::page('/admin',function($app){
 	if(DB_STATUS == false) die(Http::json(["Database Connection failed"]));
+	
 	if(isset($_POST['save'])){
 		$routes = explode(',',$_POST['routes']);
 		if($_POST['title'] != '' && $_POST['content']!=''){
 			$checkTypes = array('page'=>"tbl_pages",'blog'=>"tbl_blogs",'service'=>"tbl_service");
-			
-			if(!$app->db->has("tbl_routes",["route"=>$app->clean_url($_POST['title'])]) && !in_array($app->clean_url($_POST['title']),$routes)){       
-			    $id = $app->db->insert("tbl_routes", [
+			$q = $app->db->get_where("tbl_routes",["route"=>$app->clean_url($_POST['title'])]);
+
+			if($q->num_rows()==0 && !in_array($app->clean_url($_POST['title']),$routes)){       
+			   $app->db->insert("tbl_routes", [
 						"type" => $_POST['type'],
 						"route" => $app->clean_url($_POST['title']),
 						"when_created" => date('Y-m-d H:i:s')
 					]);
+			    $id = $app->db->insert_id();
 				$app->db->insert($checkTypes[$_POST['type']], [
 								"route_id" => $id,
 								"title" => $_POST['title'],
@@ -22,7 +25,7 @@ Http::page('/admin',function($app){
 							]);
 				echo "Submitted successfuly!";
 		  }else{
-				echo "Already exist route!";
+				echo $app->clean_url($_POST['title'])]." route already exist!";
 		  }	
 		}else{
 				echo "Fill out required fields.";

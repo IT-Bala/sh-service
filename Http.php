@@ -92,8 +92,9 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 	public function db_routes(){ #$datas = $this->db->select("tbl_routes","*");
 		$callStack = [];
 		if(DB_STATUS == true){
-			$datas = $this->db->select("tbl_routes","*",["status"=>"1"]);
-			foreach($datas as $stack){
+			$datas = $this->db->get_where("tbl_routes",["status"=>"1"]);
+			#print_r($datas->result_array());
+			foreach($datas->result_array() as $stack){
 				$callStack[$stack['route']] = 'cms::'.$stack['type'];
 			}
 			return $callStack;	
@@ -103,29 +104,30 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 	}
 	public function getDynamicContent($url,$table){ #$datas = $this->db->select("tbl_routes","*");
 		$checkTypes = array('page'=>"tbl_pages",'blog'=>"tbl_blogs",'service'=>"tbl_service");
-		$datas = $this->db->query("SELECT p.title,p.content,p.when_created,p.when_updated FROM tbl_routes r INNER JOIN `".$checkTypes[$table]."` p ON r.route_id=p.route_id WHERE r.route = '".$url."' ")->fetchAll();
+		$datas = $this->db->query("SELECT p.title,p.content,p.when_created,p.when_updated FROM tbl_routes r INNER JOIN `".$checkTypes[$table]."` p ON r.route_id=p.route_id WHERE r.route = '".$url."' ");
+		$datas = $datas->result_array();
 		return $datas[0];
 	}
 	public function db_page(){ #$datas = $this->db->select("tbl_routes","*");
 		$callStack = [];
-		$datas = $this->db->query("SELECT * FROM tbl_routes r INNER JOIN tbl_pages p ON r.route_id=p.route_id")->fetchAll();
-		foreach($datas as $stack){
+		$datas = $this->db->query("SELECT * FROM tbl_routes r INNER JOIN tbl_pages p ON r.route_id=p.route_id");
+		foreach($datas->result_array() as $stack){
 			$callStack[$stack['route']] = array('cms::'.$stack['type'],$stack);
 		} #echo 'running';
 		return $callStack;
 	}
 	public function db_service(){ #$datas = $this->db->select("tbl_routes","*");
 		$callStack = [];
-		$datas = $this->db->query("SELECT p.title,p.content,p.when_created FROM tbl_routes r INNER JOIN tbl_service p ON r.route_id=p.route_id")->fetchAll();
-		foreach($datas as $stack){
+		$datas = $this->db->query("SELECT p.title,p.content,p.when_created FROM tbl_routes r INNER JOIN tbl_service p ON r.route_id=p.route_id");
+		foreach($datas->result_array() as $stack){
 			$callStack[$stack['route']] = array('cms::'.$stack['type'],$stack);
 		}
 		return $callStack;
 	}
 	public function db_blog(){ 
 		$callStack = [];
-		$datas = $this->db->query("SELECT * FROM tbl_routes r INNER JOIN tbl_blogs p ON r.route_id=p.route_id")->fetchAll();
-		foreach($datas as $stack){
+		$datas = $this->db->query("SELECT * FROM tbl_routes r INNER JOIN tbl_blogs p ON r.route_id=p.route_id");
+		foreach($datas->result_array() as $stack){
 			$callStack[$stack['route']] = array('cms::'.$stack['type'],$stack);
 		}
 		return $callStack;
@@ -300,12 +302,6 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 	}
 	
 	public function run($sh=NULL){
-		# Auto Init Extender
-		if(is_dir('extender/init')){
-			foreach (glob("extender/init/*.php") as $ext_file){
-				if(file_exists($ext_file)) require_once $ext_file;
-			}
-		}
 		# Modules
 		if(is_dir('modules')){
 			foreach (glob("modules/*",GLOB_ONLYDIR) as $module_folder){
@@ -314,6 +310,14 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 				}
 			}
 		}
+		# Auto Init Extender
+		if(is_dir('extender/init')){ $adminFile = 'extender/init/admin.php';
+			foreach (glob("extender/init/*.php") as $ext_file){
+				if(file_exists($ext_file) && basename($ext_file)!='admin.php') require_once $ext_file;
+			} 
+			if(file_exists($adminFile)) require_once $adminFile; # Admin page should be final include
+		}
+		
 		if(is_string($sh)){ $ext_file = EXT_PATH.$sh.'.php';
 			if(file_exists($ext_file)) require_once $ext_file;
 		}else if(is_array($sh)){
@@ -344,7 +348,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 										if($splitC[1] == 'service'){
 											$datas = self::getDynamicContent(substr(self::getCurrentUri(), 1),$splitC[1]);
 											$this->json($datas);										
-										}else{
+										}else{ 
 											if(file_exists($cmsFile)){
 												$datas = self::getDynamicContent(substr(self::getCurrentUri(), 1),$splitC[1]);
 												extract($datas);

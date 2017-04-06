@@ -65,6 +65,9 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 * @param	bool	$persistent
 	 * @return	object
 	 */
+	public function __call($name,$args){
+		die('<p align="center">Database Error : '.$name.'() method is invalid');
+	}
 	public function db_connect($persistent = FALSE)
 	{
 		// Do we have a socket path?

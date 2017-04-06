@@ -1,6 +1,6 @@
 <?php
 defined('SHA') OR exit('Access Denied');
-
+#require_once 'core/Common.php';
 function DBC($params = '', $query_builder_override = NULL)
 {
 	// Load the DB config file if a DSN string wasn't passed
@@ -172,4 +172,15 @@ function DBC($params = '', $query_builder_override = NULL)
 
 function log_message(){
 	
+}
+function load_class($var1,$var2){
+	return $var1;
+}
+function db_error($error,$message){ 
+	echo '<p align="center">'.$message[0].'</p>';
+	echo '<p align="center">'.$message[1].'</p>';
+	echo '<p align="center">'.$error[0].'</p>';
+	echo '<p align="center">'.$error[2].'</p>';
+	echo '<p align="center">'.$error[1].'</p>';
+	die();
 }

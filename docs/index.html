@@ -255,6 +255,63 @@
 	echo Curl::delete($url,json_encode($result),true);
 </code> 
 </pre>
+<h3>Pagination Options</h3>
+<pre>
+<code class="language-php">
+    $app->get('/users',function($app,$req){ 
+
+	if($req->session->get('user_total') == ""){
+		$q  = $app->db->query("SELECT count(id) as total FROM  csv_table");
+		$result= $q->result_object();
+		$req->session->set('user_total',$result[0]->total); 
+	}
+
+	$totalRecords = $req->session->get('user_total');
+ 
+	$paginator = $app->library('Paginator');
+	$paginator->itemsPerPage = 10;
+	$paginator->total = $totalRecords;
+	$paginator->_link = 'http://localhost:83/users/';
+
+	//get record from database and show	
+	$records = $app->db->query("Select id from csv_table LIMIT 0, 10");
+	foreach($records->result_object() as $obj){
+			echo $obj->id."<br>";
+	}
+
+	$paginator->paginate();
+	echo 'Total:'.$totalRecords.' of '.$paginator->itemsPerPage;
+
+});
+$app->get('/users/:id',function($app,$req){
+
+	if($req->session->get('user_total') == ""){
+		$q  = $app->db->query("SELECT count(id) as total FROM  csv_table");
+		$result= $q->result_object();
+		$req->session->set('user_total',$result[0]->total); 
+	}
+    $totalRecords = $req->session->get('user_total');
+ 
+	$paginator = $app->library('Paginator');
+	$paginator->itemsPerPage = 10;
+	$paginator->total = $totalRecords;
+	$paginator->_link = 'http://localhost:83/users/';
+	
+	$id = (int)$req->id;
+	$currentPage = $req->id-1;
+	$limiter     =  $currentPage*$paginator->itemsPerPage;
+
+	//get record from database and show	
+	$records = $app->db->query("Select id from csv_table LIMIT ".$limiter.", ".$paginator->itemsPerPage);
+	foreach($records->result_object() as $obj){
+			echo $obj->id."<br>";
+	}
+	//print
+	$paginator->paginate($req->id);
+	echo 'Total:'.$totalRecords.' of '.$req->id*$paginator->itemsPerPage;
+});
+</code> 
+</pre>
 <h3>Command Options</h3>
 <pre>
 <code class="language-php">

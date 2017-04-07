@@ -25,4 +25,4 @@ $app->page('/home',function($app){
     $app->html('home');
 });
 
-$app->run(['sh','admin']); # Extender
+$app->run(); # Extender

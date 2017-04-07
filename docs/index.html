@@ -294,7 +294,7 @@ $app->get('/users/:id',function($app,$req){
  
 	$paginator = $app->library('Paginator');
 	$paginator->itemsPerPage = 10;
-	$paginator->total = $totalRecords;
+	$paginator->total = ($totalRecords/$paginator->itemsPerPage);
 	$paginator->_link = 'http://localhost:83/users/';
 	
 	$id = (int)$req->id;

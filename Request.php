@@ -1,6 +1,6 @@
 <?php
 class Request{
-	public function Request($args=array()){
+	public function __construct($args=array()){
 		foreach($args as $var=>$value){
 			$this->$var = $value;
 		}

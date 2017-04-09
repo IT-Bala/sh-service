@@ -144,7 +144,7 @@ if(isset($argv[1]) && $argv[1]!=''){
 		if(isset($argv[2]) && $argv[2]!=''){						
 				$type = strtolower($argv[2]);
 				switch ($type) {
-					case 'extender':
+					case 'extender' || 'routes':
 						echo clean_color($compile->extender());
 					break;			
 					default:

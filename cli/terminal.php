@@ -96,10 +96,53 @@ if(isset($argv[1]) && $argv[1]!=''){
 			echo BAD_FORMAT();
 		}
 
+	}elseif(strtolower($argv[1]) == 'list'){
+		if(isset($argv[2]) && $argv[2]!=''){						
+				$type = strtolower($argv[2]);
+				switch ($type) {
+					case 'controller':
+						echo "[ Controllers ]\n";
+                        foreach(glob("controller/*.php") as $file){
+                            echo basename($file)."\n";
+                        }
+					break;
+                    case 'model':
+						echo "[ Models ]\n";
+                        foreach(glob("model/*.php") as $file){
+                            echo basename($file)."\n";
+                        }
+					break;
+                    case 'library':
+						echo "[ Libraries ]\n";
+                        foreach(glob("library/*.php") as $file){
+                            echo basename($file)."\n";
+                        }
+					break;
+                    case 'module':
+						echo "[ Modules ]\n";
+                        foreach(glob("modules/*") as $file){
+                            echo basename($file)."\n";
+                        }
+					break;	
+                    case 'extender':
+						echo "[ Extenders ]\n";
+                        foreach(glob("extender/*.php") as $file){
+                            echo basename($file)."\n";
+                        }
+					break;		
+					default:
+						echo BAD_FORMAT();
+					break;
+				}
+			
+		}else{
+			echo BAD_FORMAT();
+		}
+
 	}elseif(strtolower($argv[1]) == 'compile'){ require_once 'compile.php';
 		$compile = new compile();
 		if(isset($argv[2]) && $argv[2]!=''){						
-				$type = $argv[2];
+				$type = strtolower($argv[2]);
 				switch ($type) {
 					case 'extender':
 						echo clean_color($compile->extender());
@@ -148,7 +191,7 @@ if(isset($argv[1]) && $argv[1]!=''){
 		require_once 'commands.php';
 }
 function BAD_FORMAT(){
-	return "\033[0;31msh-service bad format command.\033[0m \n";
+	return clean_color("\033[0;31msh-service bad format command.\033[0m \n");
 }
 function clean_color($str){
 	 $codes = array("\033[0;32m", "\033[0m", "\033[0;31m","\033[0m","\033[1;33m","\033[0;37m","\033[0;33m");

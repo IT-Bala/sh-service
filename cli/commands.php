@@ -7,7 +7,7 @@ echo clean_color($colors->getColoredString("[ Command Options ]", "yellow", "") 
 # Create Command
 echo clean_color($colors->getColoredString("[ Options ]", "brown", "") . "\n\n");
 echo clean_color($colors->getColoredString("-v , -version			", "green", "") . "	Display the version\n");
-echo clean_color($colors->getColoredString("-h , -help			", "green", "") . "	Command Help\n");
+echo clean_color($colors->getColoredString("-h , -help			", "green", "") . "	Command Help\n\n");
 
 # Create Command
 echo clean_color($colors->getColoredString("[ Create Command ]", "brown", "") . "\n");

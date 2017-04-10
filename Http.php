@@ -1,12 +1,12 @@
 <?php
 if(!defined("SHA")) die("Access denied!");
 #require_once 'dbc/dbc.php'; # Medoo third party
+require_once 'config.php';
 require 'autoload.php';
 require_once 'Input.php';
-require_once 'config.php';
 require_once 'dbc/DB.php';
 class Http{ var $http_method; public $db; protected $route_url=[]; public $next_object=[];
-	public function __construct(){ set_error_handler('getError');
+	public function Http(){ set_error_handler('getError');
 		$this->http_method = $_SERVER['REQUEST_METHOD'];
 		try{
 			if(DB_STATUS == true){
@@ -234,7 +234,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			die(Http::setHeader("200",$content));
 		}
 	}
-	
+
 	private function error(){
 		
 	}
@@ -277,9 +277,21 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 
 			$this->route_url[$this->http_method][] = ['url'=>$argUrl,'method'=>$this->http_method];
 			
-			if(strpos($argUrl, '/:')!==false){ # dynamic {name} url
+			if(strpos($argUrl, '/:')!==false || strpos($argUrl, '):')!==false){ # dynamic {name} url
 				#$dynamic_route_args=[];
-				$pattern = "@^" . preg_replace('/\\\:[a-zA-Z0-9\_\-]+/', '([a-zA-Z0-9\-\_]+)', preg_quote($argUrl)) . "$@D";
+				/* data type base*/
+					$needleDataTye = ''; $rep_pattern = '([a-zA-Z0-9\-\_]+)';
+			        if (preg_match('/(?<=\()(.+)(?=\))/is', $argUrl, $match)) {
+			            $needleDataTye = $match[1];
+			        }
+			        $DataTyeList = self::dataTypesList();
+			        if(array_key_exists($needleDataTye, $DataTyeList)){
+			            $rep_pattern = $DataTyeList[$needleDataTye];
+			            $argUrl = str_replace(array('(', ')',$needleDataTye), '', $argUrl); # (int) , (string) etc 
+			        }
+			    /* data type base*/
+				$pattern = "@^" . preg_replace('/\\\:[a-zA-Z0-9\_\-]+/', $rep_pattern, preg_quote($argUrl)) . "$@D";
+				
         		$matches = $route_args = Array();
         		if(isset($this->http_method) && preg_match($pattern, self::getCurrentUri(), $matches)){
         			  #array_shift($matches);
@@ -300,7 +312,9 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			}
 		}
 	}
-	
+	protected function dataTypesList(){
+		return array('int'=>'([0-9]+)','string'=>'([a-zA-Z0-9\-\_]+)','base64'=>'([a-zA-Z0-9+/]+={0,2}$)','any'=>'([A-Za-z0-9_~\-!\@\=\$\%\&\.\*\(\)]+$)');
+	}
 	public function run($sh=NULL){
 		# Modules
 		if(is_dir('modules')){
@@ -330,12 +344,25 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 
 				$routeCount = count($this->route_url[$this->http_method]); $notMatchCount=0;
 				foreach($this->route_url[$this->http_method] as $route){ #echo self::getCurrentUri();#echo $route;
-					$pattern = "@^" . preg_replace('/\\\:[a-zA-Z0-9\_\-]+/', '([a-zA-Z0-9\-\_]+)', preg_quote($route['url'])) . "$@D";
+
+					/* data type base*/
+					$needleDataTye = ''; $rep_pattern = '([a-zA-Z0-9\-\_]+)';
+			        if (preg_match('/(?<=\()(.+)(?=\))/is', $route['url'], $match)){
+			            $needleDataTye = $match[1];
+			        }
+			        $DataTyeList = self::dataTypesList();
+			        if(array_key_exists($needleDataTye, $DataTyeList)){
+			            $rep_pattern = $DataTyeList[$needleDataTye]; 
+			            $route['url'] = str_replace(array('(', ')',$needleDataTye), '', $route['url']); # (int) , (string) etc
+			        }
+			        /* data type base*/
+
+					$pattern = "@^" . preg_replace('/\\\:[a-zA-Z0-9\_\-]+/', $rep_pattern, preg_quote($route['url'])) . "$@D";
         			$matches = $route_args = Array();
 
         			if(isset($this->route_url[$this->http_method]) && $route['method']==$this->http_method && preg_match($pattern, self::getCurrentUri(), $matches)){
         			  array_shift($matches);
-        			  if(count($matches) > 0){	
+        			  if(count($matches) > 0){
 			            	$route_args = array_combine(self::get_colon_vars($route['url']),$matches);
 			            }
 			          #die;

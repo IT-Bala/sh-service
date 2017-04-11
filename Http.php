@@ -20,7 +20,6 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 				]); # Medoo third party */ 
 				$active_group = 'default';
 				$query_builder = TRUE;
-
 				$db['default'] = array(
 					'dsn'	=> DNS,
 					'hostname' => HOST,
@@ -234,7 +233,6 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			die(Http::setHeader("200",$content));
 		}
 	}
-
 	private function error(){
 		
 	}
@@ -250,7 +248,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 	function array_has_dupes($array) {
 	   return count($array) !== count(array_unique($array));
 	}
-	private function get_colon_vars($str){ $colonVar=[];
+	private function get_colon_vars($str){ $colonVar= [];
 		if(strpos($str,'/:') !==false){
 			$slashColon = explode('/:', $str);
 			array_shift($slashColon);
@@ -261,7 +259,9 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 					$colonVar[] = $value;
 				}
 			} 
-		} return $colonVar;
+		} 
+		
+		return array_merge($colonVar);
 	}
 	private function getCurrentUri(){
 		$basepath = implode('/', array_slice(explode('/', $_SERVER['SCRIPT_NAME']), 0, -1)) . '/';
@@ -274,24 +274,33 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 		if(isset($this->route_url[$this->http_method]) && in_array($argUrl,$this->route_url[$this->http_method])){
 			die($this->setHeader("500",$this->http_method.': Duplicate URL called '.$argUrl.' multiple times called '));
 		}else{
-
 			$this->route_url[$this->http_method][] = ['url'=>$argUrl,'method'=>$this->http_method];
 			
 			if(strpos($argUrl, '/:')!==false || strpos($argUrl, '):')!==false){ # dynamic {name} url
 				#$dynamic_route_args=[];
 				/* data type base*/
-					$needleDataTye = ''; $rep_pattern = '([a-zA-Z0-9\-\_]+)';
-			        if (preg_match('/(?<=\()(.+)(?=\))/is', $argUrl, $match)) {
-			            $needleDataTye = $match[1];
+					$DataTyeList = self::dataTypesList();
+					$needleDataTye = array(); $rep_pattern = '([a-zA-Z0-9\-\_]+)';
+					$argUrl = str_replace("/:","/(basic):",$argUrl);
+			        if (preg_match_all('#\b('.implode('|',array_keys($DataTyeList)).')\b#', $argUrl, $match)){
+			            $needleDataTye = $match[1]; #print_r($needleDataTye);
 			        }
-			        $DataTyeList = self::dataTypesList();
-			        if(array_key_exists($needleDataTye, $DataTyeList)){
-			            $rep_pattern = $DataTyeList[$needleDataTye];
-			            $argUrl = str_replace(array('(', ')',$needleDataTye), '', $argUrl); # (int) , (string) etc 
+			        #$findData = array_keys($DataTyeList); print_r($needleDataTye);
+			        if(count($needleDataTye) > 0){
+				        foreach($needleDataTye as $dType){
+				        	$findDataType[] = '('.$dType.')';
+				        	$findDataTypeValue[] = $DataTyeList[$dType];
+				        } #print_r($findDataTypeValue);
+				        #die;
+					    /* data type base*/
+					    $argUrl = preg_replace('/\:[a-zA-Z0-9\_\-]+/', '', $argUrl);
+
+					    $pattern = "@^" . str_replace($findDataType, $findDataTypeValue, $argUrl). "$@D";
+			        }else{
+			        	$pattern = "@^" . preg_replace('/\\\:[a-zA-Z0-9\_\-]+/', $rep_pattern, preg_quote($argUrl)) . "$@D";
 			        }
-			    /* data type base*/
-				$pattern = "@^" . preg_replace('/\\\:[a-zA-Z0-9\_\-]+/', $rep_pattern, preg_quote($argUrl)) . "$@D";
-				
+			    #preg_match($pattern, self::getCurrentUri(), $matches);
+			    #print_r($matches);
         		$matches = $route_args = Array();
         		if(isset($this->http_method) && preg_match($pattern, self::getCurrentUri(), $matches)){
         			  #array_shift($matches);
@@ -299,7 +308,6 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
         			  if($callback!=NULL) $this->access = $callback; 
 					  $this->check_auth = $check_auth;
 			    }
-
 			}else{ 
 				switch($argUrl){
 					case self::getCurrentUri(): 
@@ -313,7 +321,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 		}
 	}
 	protected function dataTypesList(){
-		return array('int'=>'([0-9]+)','string'=>'([a-zA-Z0-9\-\_]+)','base64'=>'([a-zA-Z0-9+/]+={0,2}$)','any'=>'([A-Za-z0-9_~\-!\@\=\$\%\&\.\*\(\)]+$)');
+		return array('basic'=>'([a-zA-Z0-9\-\_]+)','int'=>'([0-9]+)','string'=>'([a-zA-Z0-9\-\_]+)','base64'=>'([a-zA-Z0-9+/]+={0,2}$)','any'=>'([a-zA-Z0-9\-\_\=\@\!\&\$\#]+)');
 	}
 	public function run($sh=NULL){
 		# Modules
@@ -341,29 +349,40 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 		}
 		switch($this->http_method){
 			case ('GET' || 'POST' || 'PUT' || 'DELETE' || 'PAGE'): #echo self::getCurrentUri(); print_r($this->route_url[$this->http_method]);
-
 				$routeCount = count($this->route_url[$this->http_method]); $notMatchCount=0;
 				foreach($this->route_url[$this->http_method] as $route){ #echo self::getCurrentUri();#echo $route;
-
 					/* data type base*/
-					$needleDataTye = ''; $rep_pattern = '([a-zA-Z0-9\-\_]+)';
-			        if (preg_match('/(?<=\()(.+)(?=\))/is', $route['url'], $match)){
-			            $needleDataTye = $match[1];
+					$DataTyeList = self::dataTypesList();	
+					$needleDataTye = $findDataType = array(); $rep_pattern = '([a-zA-Z0-9\-\_]+)';			        
+			        #echo $route['url'];
+					$route['url'] = str_replace("/:","/(basic):",$route['url']);
+			        if (preg_match_all('#\b('.implode('|',array_keys($DataTyeList)).')\b#', $route['url'], $match)){
+			            $needleDataTye = $match[1]; #print_r($needleDataTye);
 			        }
-			        $DataTyeList = self::dataTypesList();
-			        if(array_key_exists($needleDataTye, $DataTyeList)){
-			            $rep_pattern = $DataTyeList[$needleDataTye]; 
-			            $route['url'] = str_replace(array('(', ')',$needleDataTye), '', $route['url']); # (int) , (string) etc
-			        }
+			        if(count($needleDataTye) > 0){
+				        #$findData = array_keys($DataTyeList); print_r($needleDataTye);
+				        foreach($needleDataTye as $dType){
+				        	$findDataType[] = '('.$dType.')';
+				        	$findDataTypeValue[] = $DataTyeList[$dType];
+				        } #print_r($findDataType);
+				        #die;
+					    /* data type base*/
+					    $route_original['url'] = str_replace($findDataType, "", $route['url']);
+					    $route['url'] = preg_replace('/\:[a-zA-Z0-9\_\-]+/', '', $route['url']);
+
+					    $pattern = "@^" . str_replace($findDataType, $findDataTypeValue, $route['url']). "$@D";
+				    }else{
+				    	$pattern = "@^" . preg_replace('/\\\:[a-zA-Z0-9\_\-]+/', $rep_pattern, preg_quote($route['url'])) . "$@D";
+				    }
 			        /* data type base*/
+					#$pattern = "@^" . preg_replace('/\\\:[a-zA-Z0-9\_\-]+/', $rep_pattern, preg_quote($route['url'])) . "$@D";
 
-					$pattern = "@^" . preg_replace('/\\\:[a-zA-Z0-9\_\-]+/', $rep_pattern, preg_quote($route['url'])) . "$@D";
         			$matches = $route_args = Array();
-
         			if(isset($this->route_url[$this->http_method]) && $route['method']==$this->http_method && preg_match($pattern, self::getCurrentUri(), $matches)){
-        			  array_shift($matches);
+        			  array_shift($matches); 
         			  if(count($matches) > 0){
-			            	$route_args = array_combine(self::get_colon_vars($route['url']),$matches);
+        			  		#print_r(self::get_colon_vars($route_original['url'])); #print_r($matches);
+			            	$route_args = array_combine(self::get_colon_vars($route_original['url']),$matches);
 			            }
 			          #die;
 					  if((isset($_SERVER['HTTP_'.SH_KEY]) && $_SERVER['HTTP_'.SH_KEY] == SH_VALUE) || SHA==FALSE || $this->check_auth == FALSE){
@@ -419,7 +438,6 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 								require_once 'Request.php';
 								require_once 'Response.php';
 								# $Request = (object)$route_args
-
 								$call( new Http() , $Request = (new Request($route_args)), $Response=(new Response));
 								#unset($_GET,$_POST);
 							}
@@ -480,7 +498,6 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			
 			$active_group = 'default';
 			$query_builder = TRUE;
-
 			$db['default'] = array(
 				'dsn'	=> DNS,
 				'hostname' => HOST,
@@ -503,7 +520,6 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 				'save_queries' => TRUE
 			);
 			return DBC($db['default']);
-
 		}else{ die($this->setHeader("500","Enble DB_STATUS in config.php")); }
 	}
 }

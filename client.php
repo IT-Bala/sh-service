@@ -1,10 +1,10 @@
 <?php 
-define("BASE_URL","http://192.168.1.57/practice/small-http/");
+ini_set('display_errors',-1);
+define("BASE_URL","http://localhost:83/");
 define("SH_KEY","API");
 define("SH_VALUE","SH");
 
 require_once 'Curl.php';
-
 
 $url 		 = BASE_URL.'user/insert';
 $post_fields = array();
@@ -12,7 +12,7 @@ $post_fields = array();
 #echo Curl::get($url,true);
 
 if(isset($_POST['submit'])){
-	$url 		 = BASE_URL.'upload';
+	#$url 		 = BASE_URL.'upload';
 	if(isset($_FILES['photo']['name']) && $_FILES['photo']['name']!=''){
 	
 	$result 	  = array(

@@ -1,4 +1,5 @@
 <?php
+if(!defined('SHA')) die("Access Denied");
 class Response{
 	private static function setHeader($status,$body=""){
 		if($status!=""){

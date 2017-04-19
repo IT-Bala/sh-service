@@ -299,8 +299,10 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			        }else{
 			        	$pattern = "@^" . preg_replace('/\\\:[a-zA-Z0-9\_\-]+/', $rep_pattern, preg_quote($argUrl)) . "$@D";
 			        }
+			    
+			    #echo $pattern;
 			    #preg_match($pattern, self::getCurrentUri(), $matches);
-			    #print_r($matches);
+			    #print_r($matches); die;
         		$matches = $route_args = Array();
         		if(isset($this->http_method) && preg_match($pattern, self::getCurrentUri(), $matches)){
         			  #array_shift($matches);
@@ -320,6 +322,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			}
 		}
 	}
+	# [0-9]{4}-[0-9]{2}-[0-9]{2}
 	protected function dataTypesList(){
 		return array('basic'=>'([a-zA-Z0-9\-\_]+)','int'=>'([0-9]+)','string'=>'([a-zA-Z0-9\-\_]+)','base64'=>'([a-zA-Z0-9+/]+={0,2}$)','any'=>'([a-zA-Z0-9\-\_\=\@\!\&\$\#]+)');
 	}
@@ -386,7 +389,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			            }
 			          #die;
 					  if((isset($_SERVER['HTTP_'.SH_KEY]) && $_SERVER['HTTP_'.SH_KEY] == SH_VALUE) || SHA==FALSE || $this->check_auth == FALSE){
-							$call = $this->access;
+							$call = (isset($this->access))?$this->access:die("Bad format");
 							if(is_string($call)){ # Routes
 								$splitC = explode('::',$call);
 								if($splitC[0] == 'cms'){ # CMS Process

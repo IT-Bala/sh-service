@@ -80,10 +80,10 @@ if(isset($argv[1]) && $argv[1]!=''){
 				$typeName = strtolower($whatAt[1]);
 				switch ($type) {
 					case 'package':
-						echo clean_color($import->package($typeName));
+						echo (trim($type)!="" && $typeName)?clean_color($import->package($typeName)):BAD_FORMAT();
 					break;
 					case 'module':
-						echo clean_color($import->module($typeName));
+						echo (trim($type)!="" && $typeName)?clean_color($import->module($typeName)):BAD_FORMAT();
 					break;				
 					default:
 						echo BAD_FORMAT();
@@ -96,40 +96,14 @@ if(isset($argv[1]) && $argv[1]!=''){
 			echo BAD_FORMAT();
 		}
 
-	}elseif(strtolower($argv[1]) == 'list'){
+	}elseif(strtolower($argv[1]) == 'compile'){ require_once 'compile.php';
+		$compile = new compile();
 		if(isset($argv[2]) && $argv[2]!=''){						
-				$type = strtolower($argv[2]);
+				$type = $argv[2];
 				switch ($type) {
-					case 'controller':
-						echo "[ Controllers ]\n";
-                        foreach(glob("controller/*.php") as $file){
-                            echo basename($file)."\n";
-                        }
-					break;
-                    case 'model':
-						echo "[ Models ]\n";
-                        foreach(glob("model/*.php") as $file){
-                            echo basename($file)."\n";
-                        }
-					break;
-                    case 'library':
-						echo "[ Libraries ]\n";
-                        foreach(glob("library/*.php") as $file){
-                            echo basename($file)."\n";
-                        }
-					break;
-                    case 'module':
-						echo "[ Modules ]\n";
-                        foreach(glob("modules/*") as $file){
-                            echo basename($file)."\n";
-                        }
-					break;	
-                    case 'extender':
-						echo "[ Extenders ]\n";
-                        foreach(glob("extender/*.php") as $file){
-                            echo basename($file)."\n";
-                        }
-					break;		
+					case 'extender':
+						echo clean_color($compile->extender());
+					break;			
 					default:
 						echo BAD_FORMAT();
 					break;
@@ -139,19 +113,27 @@ if(isset($argv[1]) && $argv[1]!=''){
 			echo BAD_FORMAT();
 		}
 
-	}elseif(strtolower($argv[1]) == 'compile'){ require_once 'compile.php';
-		$compile = new compile();
-		if(isset($argv[2]) && $argv[2]!=''){						
-				$type = strtolower($argv[2]);
+	}elseif(strtolower($argv[1]) == 'explain'){ require_once 'explain.php';
+		$explain = new explain();
+		if(isset($argv[2]) && $argv[2]!=''){
+			$whatAt = explode(":", $argv[2]);
+			if(count($whatAt) == 2){
+				$type = strtolower($whatAt[0]);
+				$typeName = strtolower($whatAt[1]);
 				switch ($type) {
-					case 'extender' || 'routes':
-						echo clean_color($compile->extender());
+					case 'module':
+						echo (trim($type)!="" && $typeName)?clean_color($explain->module($typeName)):BAD_FORMAT();
+					break;
+					case 'extender':
+						echo (trim($type)!="" && $typeName)?clean_color($explain->extender($typeName)):BAD_FORMAT();
 					break;			
 					default:
 						echo BAD_FORMAT();
 					break;
 				}
-			
+			}else{
+				echo BAD_FORMAT();	
+			}
 		}else{
 			echo BAD_FORMAT();
 		}
@@ -191,7 +173,7 @@ if(isset($argv[1]) && $argv[1]!=''){
 		require_once 'commands.php';
 }
 function BAD_FORMAT(){
-	return clean_color("\033[0;31msh-service bad format command.\033[0m \n");
+	return "\033[0;31msh-service bad format command.\033[0m \n";
 }
 function clean_color($str){
 	 $codes = array("\033[0;32m", "\033[0m", "\033[0;31m","\033[0m","\033[1;33m","\033[0;37m","\033[0;33m");
@@ -204,7 +186,7 @@ function rrmdir($dir){
    if (is_dir($dir)) { 
      $objects = scandir($dir); 
      foreach ($objects as $object) { 
-       if ($object != "." && $object != ".."){ 
+       if ($object != "." && $object != ".."){
          if (is_dir($dir."/".$object))
            rrmdir($dir."/".$object);
          else

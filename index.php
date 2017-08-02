@@ -19,35 +19,6 @@ $app->get('/',function($app){
     $app->json($q->result());
 
 });
-/*$app->get('/lybrate',function($app){
-
-	for($i=1;$i<10;$i++){
-		$j = '{"firstName":"a'.$i.'","mobile":"76950'.$i.'1196","email":"a'.$i.'@yahoo.com","countryCode":"IN","source":"PS-PPV","gender":"male"}';
-    	echo Curl::post("https://www.lybrate.com/p/login-signup",$j,true);
-    	echo '<br><br>';
-	}
-
-});*/
-
-$app->get('/rest/(int):id/(any):demo',function($app){
-    #$app->json('Welcome to SH service');
-    $q = $app->db->get('users');
-    #$q = db()->get('users');
-    $app->json($q->result());
-
-});
-
-# (int):id , (string):id , (any):id ,
-
-/*$app->get('/test/(int):id/(string):dell/(any):sheik/(int):me',function($app,$req){
-	echo ($req->id);
-});*/
-
-# date: 2017-04-01 , 
-$app->get('/demo/(date):hello',function($app,$req){
-	echo $req->hello;
-});
-
 
 
 $app->page('/users',function($app,$req){

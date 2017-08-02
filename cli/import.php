@@ -48,7 +48,7 @@ class import{
 		if (file_exists($file)){
 		  	$msg = "\033[0;31m".ucfirst($fileName)." ".$c_dir." already exist.\033[0m \n";
 		} else { 
-		  if(!is_dir($c_dir) && is_writable($c_dir)){
+		  if(is_dir($c_dir) && is_writable($c_dir)){
 		  	# Download from server & extract
 			$url = $this->server_uri.$c_dir."/".ucfirst($fileName).".pkg";
 			$headers = self::getHeaders($url);

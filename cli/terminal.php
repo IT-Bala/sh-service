@@ -126,7 +126,10 @@ if(isset($argv[1]) && $argv[1]!=''){
 					break;
 					case 'extender':
 						echo (trim($type)!="" && $typeName)?clean_color($explain->extender($typeName)):BAD_FORMAT();
-					break;			
+					break;
+					case 'routes':
+						echo (trim($type)!="" && $typeName)?clean_color($explain->routes($typeName)):BAD_FORMAT();
+					break;		
 					default:
 						echo BAD_FORMAT();
 					break;

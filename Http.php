@@ -5,7 +5,7 @@ require_once 'config.php';
 require 'autoload.php';
 require_once 'Input.php';
 require_once 'dbc/DB.php';
-class Http{ var $http_method; public $db; protected $route_url=[]; public $next_object=[];
+class Http{ var $http_method; public $db; protected $route_url=[]; public $next_object=[]; public $middleware;
 	public function Http(){ set_error_handler('getError');
 		$this->http_method = $_SERVER['REQUEST_METHOD'];
 		try{
@@ -41,7 +41,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 					'failover' => array(),
 					'save_queries' => TRUE
 				);
-				$this->db = self::db();#DBC($db['default']);
+				$this->db = self::db(); #DBC($db['default']);
 			}
 		}catch(Exception $e){
 			if($e){
@@ -51,7 +51,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 		
 		$this->input = new Input;
 	}
-	public function __call($name,$args){
+	public function __call($name,$args){ 
 		die('<p align="center">Error : '.$name.'() method is invalid');
 	}
 	public function routes($target=NULL,$callback=NULL){
@@ -153,25 +153,39 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 		}
 		
 	}
-	public function get($target=NULL,$callback=NULL){
-		$argUrl = (filter_var($target, FILTER_SANITIZE_URL));
-		if($this->http_method == 'GET' && $callback!=NULL) self::switchPage($argUrl,$callback);
+	
+	public function get(){ $args = func_get_args();
+		self::check_methods('GET',$args);
 	}
-	public function post($target=NULL,$callback=NULL){
-		$argUrl = (filter_var($target, FILTER_SANITIZE_URL));
-		if($this->http_method == 'POST' && $callback!=NULL) self::switchPage($argUrl,$callback);
+	public function post(){
+		$args = func_get_args();
+		self::check_methods('POST',$args);
 	}
-	public function put($target=NULL,$callback=NULL){
-		$argUrl = (filter_var($target, FILTER_SANITIZE_URL));
-		if($this->http_method == 'PUT' && $callback!=NULL) self::switchPage($argUrl,$callback);
+	public function put(){
+		$args = func_get_args();
+		self::check_methods('PUT',$args);
 	}
-	public function delete($target=NULL,$callback=NULL){
-		$argUrl = (filter_var($target, FILTER_SANITIZE_URL));
-		if($this->http_method == 'DELETE' && $callback!=NULL) self::switchPage($argUrl,$callback);
+	public function delete(){
+		$args = func_get_args();
+		self::check_methods('DELETE',$args);
 	}
 	public function page($target=NULL,$callback=NULL){
 		$argUrl = (filter_var($target, FILTER_SANITIZE_URL));
 		if(($this->http_method == 'GET' || $this->http_method == 'POST') && $callback!=NULL) self::switchPage($argUrl,$callback,false);
+	}
+	protected function check_methods($method='GET',$args){
+		$target=$callback=NULL; $middleware = false; #echo count($args); die;
+		if(count($args) == 2){
+			$target = $args[0]; $callback = $args[1];
+		}else if(count($args) == 3){
+			$target = $args[0]; $middleware = $args[1]; $callback = $args[2];
+		}
+		$argUrl = (filter_var($target, FILTER_SANITIZE_URL));
+		if($this->http_method == 'GET' && $callback!=NULL) self::switchPage($argUrl,$callback,$middleware);
+		return new Http;
+	}
+	public function __next(){
+		return true;
 	}
 	public function url($offset=NULL){
 		$returnUrl = self::getCurrentUri();
@@ -270,7 +284,43 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 		$uri = '/' . trim($uri, '/');
 		return $uri;
 	}
-	private function switchPage($argUrl,$callback,$check_auth=true){
+	protected function middleware($call=NULL,$route_args=[]){
+		if($call!=NULL){
+			if(is_string($call)){
+					$splitC = explode('::',$call);
+					if(count($splitC) == 2){ 
+							$controller = $splitC[0]; $method = $splitC[1];
+						
+							if(file_exists(CONTROLLER_PATH.$controller.'.php')){
+								require_once CONTROLLER_PATH.$controller.'.php';
+								if (method_exists($controller,$method)){
+									$obj = new $controller;
+									$middleware_status = $obj->$method();
+									#call_user_func($call);
+								}else{
+									die($this->setHeader("500","Bad format of calling method"));
+								}
+							}else{
+								die($this->setHeader("500","Bad format of calling controller"));
+							}
+							
+						}else{
+								die($this->setHeader("500","Bad format of calling controller"));
+						}
+				}else{ 
+					#require_once 'Request.php';
+					#require_once 'Response.php';
+					# $Request = (object)$route_args
+					$middleware_status = $call( new Http() , $Request = (new Request($route_args)), $Response=(new Response));
+					#$middleware_status = $call( new Http() , $Request = (new Request()), $Response=(new Response));
+				}
+				if(!$middleware_status){
+						die($this->setHeader("500","Middleware auth failed"));
+				}
+
+		}
+	}
+	private function switchPage($argUrl,$callback,$middleware=false,$check_auth=true){
 		if(isset($this->route_url[$this->http_method]) && in_array($argUrl,$this->route_url[$this->http_method])){
 			die($this->setHeader("500",$this->http_method.': Duplicate URL called '.$argUrl.' multiple times called '));
 		}else{
@@ -285,6 +335,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			        if (preg_match_all('#\b('.implode('|',array_keys($DataTyeList)).')\b#', $argUrl, $match)){
 			            $needleDataTye = $match[1]; #print_r($needleDataTye);
 			        }
+			        $route['url'] = $argUrl;
 			        #$findData = array_keys($DataTyeList); print_r($needleDataTye);
 			        if(count($needleDataTye) > 0){
 				        foreach($needleDataTye as $dType){
@@ -293,27 +344,43 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 				        } #print_r($findDataTypeValue);
 				        #die;
 					    /* data type base*/
+					    $route_original['url'] = str_replace($findDataType, "", $route['url']);
+					    $route['url'] = preg_replace('/\:[a-zA-Z0-9\_\-]+/', '', $route['url']);
+
 					    $argUrl = preg_replace('/\:[a-zA-Z0-9\_\-]+/', '', $argUrl);
 
 					    $pattern = "@^" . str_replace($findDataType, $findDataTypeValue, $argUrl). "$@D";
 			        }else{
 			        	$pattern = "@^" . preg_replace('/\\\:[a-zA-Z0-9\_\-]+/', $rep_pattern, preg_quote($argUrl)) . "$@D";
 			        }
-			    
-			    #echo $pattern;
 			    #preg_match($pattern, self::getCurrentUri(), $matches);
-			    #print_r($matches); die;
+			    #print_r($matches);
         		$matches = $route_args = Array();
         		if(isset($this->http_method) && preg_match($pattern, self::getCurrentUri(), $matches)){
         			  #array_shift($matches);
         			  #$this->dynamic_route_args[] = $matches;
-        			  if($callback!=NULL) $this->access = $callback; 
+        			  if($middleware == false){
+							if($callback!=NULL) $this->access = $callback;
+					  }else{
+					  		array_shift($matches); 
+	        			    if(count($matches) > 0){
+				            	$route_args = array_combine(self::get_colon_vars($route_original['url']),$matches);
+	        			  		#print_r($route_args);
+				            }
+							self::middleware($middleware,$route_args);
+							if($callback!=NULL) $this->access = $callback;
+					  } 
 					  $this->check_auth = $check_auth;
 			    }
 			}else{ 
 				switch($argUrl){
-					case self::getCurrentUri(): 
-						if($callback!=NULL) $this->access = $callback;
+					case self::getCurrentUri():
+						if($middleware == false){
+							if($callback!=NULL) $this->access = $callback;
+						}else{
+							self::middleware($middleware);
+							if($callback!=NULL) $this->access = $callback;
+						}
 						$this->check_auth = $check_auth;
 					break;
 					default:
@@ -322,7 +389,6 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			}
 		}
 	}
-	# [0-9]{4}-[0-9]{2}-[0-9]{2}
 	protected function dataTypesList(){
 		return array('basic'=>'([a-zA-Z0-9\-\_]+)','int'=>'([0-9]+)','string'=>'([a-zA-Z0-9\-\_]+)','base64'=>'([a-zA-Z0-9+/]+={0,2}$)','any'=>'([a-zA-Z0-9\-\_\=\@\!\&\$\#]+)');
 	}
@@ -379,7 +445,6 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 				    }
 			        /* data type base*/
 					#$pattern = "@^" . preg_replace('/\\\:[a-zA-Z0-9\_\-]+/', $rep_pattern, preg_quote($route['url'])) . "$@D";
-
         			$matches = $route_args = Array();
         			if(isset($this->route_url[$this->http_method]) && $route['method']==$this->http_method && preg_match($pattern, self::getCurrentUri(), $matches)){
         			  array_shift($matches); 
@@ -389,7 +454,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			            }
 			          #die;
 					  if((isset($_SERVER['HTTP_'.SH_KEY]) && $_SERVER['HTTP_'.SH_KEY] == SH_VALUE) || SHA==FALSE || $this->check_auth == FALSE){
-							$call = (isset($this->access))?$this->access:die("Bad format");
+							$call = $this->access;
 							if(is_string($call)){ # Routes
 								$splitC = explode('::',$call);
 								if($splitC[0] == 'cms'){ # CMS Process
@@ -405,7 +470,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 											}
 										}
 								}elseif(count($splitC) == 2){ 
-									$controller = $splitC[0]; $method = $splitC[1];
+										$controller = $splitC[0]; $method = $splitC[1];
 									
 										if(file_exists(CONTROLLER_PATH.$controller.'.php')){
 											require_once CONTROLLER_PATH.$controller.'.php';
@@ -465,6 +530,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			
 		}
 	}
+	
 	public function controller($controller=NULL){
 		if(file_exists(CONTROLLER_PATH.$controller.'.php')){
 			require_once CONTROLLER_PATH.$controller.'.php';

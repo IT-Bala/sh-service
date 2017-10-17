@@ -1,6 +1,6 @@
 <?php
 if(isset($argv[1]) && $argv[1]!=''){
-	if(strtolower($argv[1]) == 'create'){ require_once 'create.php';
+	if(strtolower($argv[1]) == 'create' || strtolower($argv[1]) == 'mk'){ require_once 'create.php';
 		if(isset($argv[2]) && $argv[2]!=''){
 			$whatAt = explode(":", $argv[2]);
 			if(count($whatAt) == 2){
@@ -33,7 +33,7 @@ if(isset($argv[1]) && $argv[1]!=''){
 		}else{
 			echo BAD_FORMAT();
 		}
-	}elseif(strtolower($argv[1]) == 'remove'){ require_once 'remove.php';
+	}elseif(strtolower($argv[1]) == 'remove' || strtolower($argv[1]) == 'rm'){ require_once 'remove.php';
 
 		if(isset($argv[2]) && $argv[2]!=''){
 			$whatAt = explode(":", $argv[2]);
@@ -71,7 +71,7 @@ if(isset($argv[1]) && $argv[1]!=''){
 			echo BAD_FORMAT();
 		}
 
-	}elseif(strtolower($argv[1]) == 'import'){ require_once 'import.php';
+	}elseif(strtolower($argv[1]) == 'import' || strtolower($argv[1]) == 'im'){ require_once 'import.php';
 		$import = new import();
 		if(isset($argv[2]) && $argv[2]!=''){
 			$whatAt = explode(":", $argv[2]);
@@ -96,7 +96,7 @@ if(isset($argv[1]) && $argv[1]!=''){
 			echo BAD_FORMAT();
 		}
 
-	}elseif(strtolower($argv[1]) == 'compile'){ require_once 'compile.php';
+	}elseif(strtolower($argv[1]) == 'compile' || strtolower($argv[1]) == 'exe'){ require_once 'compile.php';
 		$compile = new compile();
 		if(isset($argv[2]) && $argv[2]!=''){						
 				$type = $argv[2];
@@ -113,7 +113,7 @@ if(isset($argv[1]) && $argv[1]!=''){
 			echo BAD_FORMAT();
 		}
 
-	}elseif(strtolower($argv[1]) == 'explain'){ require_once 'explain.php';
+	}elseif(strtolower($argv[1]) == 'explain' || strtolower($argv[1]) == 'exp'){ require_once 'explain.php';
 		$explain = new explain();
 		if(isset($argv[2]) && $argv[2]!=''){
 			$whatAt = explode(":", $argv[2]);
@@ -137,6 +137,39 @@ if(isset($argv[1]) && $argv[1]!=''){
 			}else{
 				echo BAD_FORMAT();	
 			}
+		}else{
+			echo BAD_FORMAT();
+		}
+
+	}elseif(strtolower($argv[1]) == 'show' || strtolower($argv[1]) == 'ls' || strtolower($argv[1]) == 'list'){ require_once 'show.php';
+
+		if(isset($argv[2]) && $argv[2]!=''){
+				$type = strtolower($argv[2]);
+				$typeName = strtolower($argv[2]);
+				switch ($type) {
+					case 'controllers':
+						echo clean_color(show::controller($typeName));
+					break;
+					case 'models':
+						echo clean_color(show::model($typeName));
+					break;
+					case 'libraries':
+						echo clean_color(show::library($typeName));
+					break;
+					case 'extenders':
+						echo clean_color(show::extender($typeName));
+					break;
+					case 'packages':
+						echo clean_color(show::package($typeName));
+					break;
+					case 'modules':
+						echo clean_color(show::module($typeName));
+					break;
+										
+					default:
+						echo BAD_FORMAT();
+					break;
+				}
 		}else{
 			echo BAD_FORMAT();
 		}

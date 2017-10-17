@@ -177,14 +177,18 @@ if(isset($argv[1]) && $argv[1]!=''){
 	}elseif($argv[1] == 'curl'){ require_once 'curl.php';
 		$curl = new curl();
 		if(isset($argv[2]) && $argv[2]!=''){
-			$whatAt = explode(":", $argv[2]);
-			if(count($whatAt) == 2){
+			$whatAt = explode(":", $argv[2]);			
+			if(count($whatAt) >=2 ){
 				$type = strtolower($whatAt[0]);
+				$whatAt = explode($type.":", $argv[2]);
 				$typeName = strtolower($whatAt[1]);
 				switch ($type) {
 					case 'get':
 						echo clean_color($curl->get($typeName));
-					break;										
+					break;
+					case 'post':
+						echo clean_color($curl->post($typeName));
+					break;											
 					default:
 						echo BAD_FORMAT();
 					break;

@@ -4,12 +4,14 @@ class explain{
 	var $server_uri;
 	public function module($module=NULL){ $msg=BAD_FORMAT(); $c_dir = 'modules'; $init_dir = $c_dir.'/'.$module.'/init.php';
 		  //if(!is_dir($init_dir)) mkdir($init_dir,777);
+		  require_once 'cli-terminal.php';
+		  $colors = new Colors();
 		  $msg = "\n";
 		  if($module!=NULL){
 				$file = $init_dir;
 					if(file_exists($file)){
 				    	$file_handle = fopen($file, "r");
-				    	echo "\n========== MODULE ".$module." ROUTES ==========\n";
+				    	echo "\n================= ".clean_color($colors->getColoredString("[ ".strtoupper("EXTENDER ".$module." ROUTES")." ]", "yellow", "") )." =================\n";
 					    while (!feof($file_handle)){
 					        $line = fgets($file_handle);
 					        #echo $line."\n";
@@ -36,13 +38,14 @@ class explain{
 	}
 
 	public function extender($extender=NULL){ $msg=BAD_FORMAT(); $c_dir = 'extender'; $init_dir = $c_dir.'/'.$extender.'.php';
-		
+		  require_once 'cli-terminal.php';
+		  $colors = new Colors();
 		  //if(!is_dir($init_dir)) mkdir($init_dir,777);
 		  $msg = "\n";
 		  if($extender!=NULL){
 				$file = $init_dir;
 				if(file_exists($file)){
-					echo "\n========== EXTENDER ".$extender." ROUTES ==========\n";
+					echo "\n================= ".clean_color($colors->getColoredString("[ ".strtoupper("EXTENDER ".$extender." ROUTES")." ]", "yellow", "") )." =================\n";
 				    $file_handle = fopen($file, "r");
 				    while (!feof($file_handle)) {
 				        $line = fgets($file_handle);
@@ -70,7 +73,8 @@ class explain{
 	}
 
 	public function routes($routes=NULL){ $msg=BAD_FORMAT(); $e_dir = 'extender'; $init_dir = $e_dir.'/*'; $m_dir = 'modules'; $init_m_dir = $m_dir.'/*';
-		  
+		  require_once 'cli-terminal.php';
+		  $colors = new Colors();
 		  //if(!is_dir($init_dir)) mkdir($init_dir,777);
 		  $routes = strtolower($routes);
 		  $msg = "\n";
@@ -299,18 +303,19 @@ class explain{
 					} 
 				}
 	
-				echo "\n=================== ".strtoupper($routes)." ROUTES ===================\n";
+				echo "\n================= ".clean_color($colors->getColoredString("[ ".strtoupper($routes)." ROUTES ]", "yellow", "") )." =================\n\n";
 				foreach ($http_routes as $filename => $routes) {
 						$fileLength = strlen($filename);
 						$equalTo = ""; $fileLength = 50;
 						for ($i=0; $i < $fileLength; $i++){
 							$equalTo .= '=';
 						}
-						echo "\n".$equalTo."\n".$filename."\n".$equalTo;
+						echo clean_color($colors->getColoredString("\n".$equalTo."\n".$filename."\n".$equalTo, "green", "") );
 						foreach ($routes as $url){
 							echo $url;
 						}
 				}
+				echo clean_color($colors->getColoredString("\n".$equalTo, "green", "") );
 
 		  }else{
 		  	$msg = "\033[0;31mExtender ".$extender." does not exist in ".$c_dir."  \033[0m \n";

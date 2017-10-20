@@ -32,4 +32,14 @@ class Request{
 			$_= $_POST;
 		} return $_;
 	}
+	public static function args($variable=NULL){
+		$_= '';
+		$input = file_get_contents('php://input');
+		if(trim($variable)!="" && isset($input) && $input!=''){
+			$requestParams = json_decode($input, true);
+			$_ = $requestParams[$variable];
+		}elseif(trim($variable)==""){
+			$_= $requestParams = json_decode($input, true);
+		} return $_;
+	}
 }

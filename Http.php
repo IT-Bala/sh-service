@@ -181,7 +181,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			$target = $args[0]; $middleware = $args[1]; $callback = $args[2];
 		}
 		$argUrl = (filter_var($target, FILTER_SANITIZE_URL));
-		if($this->http_method == 'GET' && $callback!=NULL) self::switchPage($argUrl,$callback,$middleware);
+		if(($this->http_method == 'GET' || $this->http_method == 'POST' || $this->http_method == 'PUT' || $this->http_method == 'DELETE') && $callback!=NULL) self::switchPage($argUrl,$callback,$middleware);
 		return new Http;
 	}
 	public function __next(){

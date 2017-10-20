@@ -54,7 +54,13 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 	public function __call($name,$args){ 
 		die('<p align="center">Error : '.$name.'() method is invalid');
 	}
-	public function routes($target=NULL,$callback=NULL){
+	public function routes(){  $args = func_get_args();
+		$target=$callback=NULL; $middleware = false; #echo count($args); die;
+		if(count($args) == 2){
+			$target = $args[0]; $callback = $args[1];
+		}else if(count($args) == 3){
+			$target = $args[0]; $middleware = $args[1]; $callback = $args[2];
+		}
 		$pre = (filter_var($target, FILTER_SANITIZE_URL));
 		if($pre!='' && is_array($callback)){ # multiple url calls
 		 $splitter = explode("/",$pre); 
@@ -67,7 +73,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 				if($method == 'PAGE'){
 					if($this->http_method == 'GET' || $this->http_method == 'POST' && $callback!=NULL) self::switchPage($preUrl.'/'.$subUrl,$call_function,false);
 				 }else{ 
-					if($this->http_method == $method && $callback!=NULL) self::switchPage($preUrl.'/'.$subUrl,$call_function);
+					if($this->http_method == $method && $callback!=NULL) self::switchPage($preUrl.'/'.$subUrl,$call_function,$middleware);
 				 }
 			 }
 		 }else{
@@ -82,7 +88,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 				 if($method == 'PAGE'){
 					if($this->http_method == 'GET' || $this->http_method == 'POST' && $callback!=NULL) self::switchPage($preUrl,$callback,false);
 				 }else{
-					if($this->http_method == $method && $callback!=NULL) self::switchPage($preUrl,$callback);
+					if($this->http_method == $method && $callback!=NULL) self::switchPage($preUrl,$callback,$middleware);
 				 }
 			 }
 		}

@@ -90,7 +90,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 				 }
 			 }
 		 }else{
-			 die($this->setHeader("500","Bad format of routes"));
+			 die($this->setHeader(500,"Bad format of routes")); 
 		 }
 		}else{ # It may string OR func($app){}			
 			$splitter = explode("/",$pre); 
@@ -117,7 +117,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			}
 			return $callStack;	
 		}else{
-			die($this->setHeader("500","Enble DB_STATUS in config.php"));
+			die($this->setHeader(500,"Enble DB_STATUS in config.php"));
 		}
 	}
 	public function getDynamicContent($url,$table){ #$datas = $this->db->select("tbl_routes","*");
@@ -278,9 +278,9 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 	public static function json($content,$object=false){
 		// application/json
 		if($object==true){
-			return json_decode(Http::setHeader("200",$content));
+			return json_decode(Http::setHeader(200,$content));
 		}else{
-			die(Http::setHeader("200",$content));
+			die(Http::setHeader(200,$content));
 		}
 	}
 	private function error(){
@@ -334,14 +334,14 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 									$middleware_status = $obj->$method();
 									#call_user_func($call);
 								}else{
-									die($this->setHeader("500","Bad format of calling method"));
+									die($this->setHeader(500,"Bad format of calling method"));
 								}
 							}else{
-								die($this->setHeader("500","Bad format of calling controller"));
+								die($this->setHeader(500,"Bad format of calling controller"));
 							}
 							
 						}else{
-								die($this->setHeader("500","Bad format of calling controller"));
+								die($this->setHeader(500,"Bad format of calling controller"));
 						}
 				}else{ 
 					#require_once 'Request.php';
@@ -351,7 +351,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 					#$middleware_status = $call( new Http() , $Request = (new Request()), $Response=(new Response));
 				}
 				if(!$middleware_status){
-						die($this->setHeader("500","Middleware auth failed"));
+						die($this->setHeader(500,"Middleware auth failed"));
 				}
 
 		}
@@ -367,7 +367,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 		}
 		# PRE URL SECTION
 		if(isset($this->route_url[$this->http_method]) && in_array($argUrl,$this->route_url[$this->http_method])){
-			die($this->setHeader("500",$this->http_method.': Duplicate URL called '.$argUrl.' multiple times called '));
+			die($this->setHeader(500,$this->http_method.': Duplicate URL called '.$argUrl.' multiple times called '));
 		}else{
 			$this->route_url[$this->http_method][] = ['url'=>$argUrl,'method'=>$this->http_method];
 			
@@ -464,7 +464,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 		switch($this->http_method){
 			case ('GET' || 'POST' || 'PUT' || 'DELETE' || 'PAGE'): #echo self::getCurrentUri(); print_r($this->route_url[$this->http_method]);
 				if(count($this->route_url) == 0){
-					die($this->setHeader("400","Bad Request"));
+					die($this->setHeader(400,"Bad Request"));
 				}else{
 					$routeCount = count($this->route_url[$this->http_method]); $notMatchCount=0;
 					foreach($this->route_url[$this->http_method] as $route){ #echo self::getCurrentUri();#echo $route;
@@ -530,14 +530,14 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 													$obj->$method();
 													#call_user_func($call);
 												}else{
-													die($this->setHeader("500","Bad format of calling method"));
+													die($this->setHeader(500,"Bad format of calling method"));
 												}
 											}else{
-												die($this->setHeader("500","Bad format of calling controller"));
+												die($this->setHeader(500,"Bad format of calling controller"));
 											}
 										
 									}else{
-											die($this->setHeader("500","Bad format of calling controller"));
+											die($this->setHeader(500,"Bad format of calling controller"));
 									}
 								}elseif(is_array($call)){ # Check $splitC[0] cms::page or normal
 									$splitC = explode('::',$call[0]);
@@ -562,9 +562,9 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 								}
 						  }else{ #echo $_SERVER['HTTP_'.SH_KEY];
 							    if(SHA==true && !isset($_SERVER['HTTP_'.SH_KEY])){
-									die($this->setHeader("401","Unauthorized"));
+									die($this->setHeader(401,"Unauthorized"));
 								}elseif($_SERVER['HTTP_'.SH_KEY] != SH_VALUE){
-									die($this->setHeader("401","Unable to verify your token Value."));	
+									die($this->setHeader(401,"Unable to verify your token Value."));	
 								}
 								
 						 }
@@ -574,7 +574,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 						# End Loop
 					} 
 					if($routeCount == $notMatchCount){
-				    	die($this->setHeader("400","Bad Request"));
+				    	die($this->setHeader(400,"Bad Request"));
 				    }
 				}
 			break;
@@ -641,7 +641,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 				'save_queries' => TRUE
 			);
 			return DBC($db['default']);
-		}else{ die($this->setHeader("500","Enble DB_STATUS in config.php")); }
+		}else{ die($this->setHeader(500,"Enble DB_STATUS in config.php")); }
 	}
 }
 function http(){
@@ -651,7 +651,7 @@ function db(){
 	if(DB_STATUS == true){
 		$dbc = new Http();
 		return $dbc->db;
-	}else{ die($this->setHeader("500","Enble DB_STATUS in config.php")); }
+	}else{ die($this->setHeader(500,"Enble DB_STATUS in config.php")); }
 }
 function getError($number, $msg, $file, $line, $vars){
 	   $error = debug_backtrace(); #var_dump($error);

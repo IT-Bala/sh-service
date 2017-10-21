@@ -200,6 +200,22 @@ if(isset($argv[1]) && $argv[1]!=''){
 			echo BAD_FORMAT();
 		}
 
+	}elseif(strtolower($argv[1]) == 'server' || strtolower($argv[1]) == '-s'){
+		
+		if(isset($argv[2]) && $argv[2]!=''){
+			$whatAt = explode(":", $argv[2]);			
+			if(count($whatAt) >=2 ){
+				$type = strtolower($whatAt[0]);
+				$whatAt = explode($type.":", $argv[2]);
+				$port = strtolower($whatAt[1]);
+				shell_exec("php -S localhost:".$port);				
+			}else{
+				echo BAD_FORMAT();	
+			}
+		}else{
+			echo BAD_FORMAT();
+		}
+			
 	}elseif(strtolower($argv[1]) == '-v' || strtolower($argv[1]) == '-version'){
 			echo clean_color("\033[0;32msh-service framework v1.0.0 \033[0m (\033[0;37mDeveloped @ Soava Lab\033[0m) \n");
 	}elseif(strtolower($argv[1]) == '-h' || strtolower($argv[1]) == '-help'){
@@ -213,7 +229,7 @@ if(isset($argv[1]) && $argv[1]!=''){
 		require_once 'commands.php';
 }
 function BAD_FORMAT(){
-	return "\033[0;31msh-service bad format command.\033[0m \n";
+	return clean_color("\033[0;31msh-service bad format command.\033[0m \n");
 }
 function clean_color($str){
 	 $codes = array("\033[0;32m", "\033[0m", "\033[0;31m","\033[0m","\033[1;33m","\033[0;37m","\033[0;33m");

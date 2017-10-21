@@ -10,9 +10,9 @@ class Response{
 	public static function json($content,$object=false){
 		// application/json
 		if($object==true){
-			return json_decode(self::setHeader("200",$content));
+			return json_decode(self::setHeader(200,$content));
 		}else{
-			die(self::setHeader("200",$content));
+			die(self::setHeader(200,$content));
 		}
 	}
 	public static function send(){ $status = 200; $content_type = 'application/json';

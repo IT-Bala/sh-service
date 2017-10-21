@@ -5,7 +5,7 @@ require_once 'config.php';
 require 'autoload.php';
 require_once 'Input.php';
 require_once 'dbc/DB.php';
-class Http{ var $http_method; public $db; protected $route_url=[]; public $next_object=[]; public $middleware;
+class Http{ var $http_method; public $db; protected $route_url=[]; public $next_object=[]; public $middleware; public $pre_url=''; 
 	public function Http(){ set_error_handler('getError');
 		$this->http_method = $_SERVER['REQUEST_METHOD'];
 		try{
@@ -50,6 +50,19 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 		}
 		
 		$this->input = new Input;
+	}
+	public function base(){ $args = func_get_args(); $route_args = [];
+		if(count($args) >=1){
+			$first = $args[0];
+			if(is_string($first)){ # for pre url purpose
+				$this->pre_url = $args[0];
+				if(isset($args[1]) && is_callable($args[1])){ $call = $args[1];
+				  $this->middleware($call);	
+				}
+			}elseif(is_callable($first)){ $call = $first;
+				$this->middleware($call);
+			}
+		}
 	}
 	public function __call($name,$args){ 
 		die('<p align="center">Error : '.$name.'() method is invalid');
@@ -209,8 +222,24 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			return json_encode(["status"=>$status,"body"=>$body]);
 		}
 	}
-	private function response(){
-		// set headder & status
+	public function send(){ $status = 200; $content_type = 'application/json';
+		$args = func_get_args();
+		if(count($args) >0){
+				if(count($args) == 1){
+					$body = $args[0];
+				}elseif(count($args) == 2){
+					$status = $args[0]; 
+					$body = $args[1];
+				}else{
+					$status = $args[0]; 
+					$body = $args[1];
+					$content_type = $args[2];
+				}
+				header("HTTP/1.1 ".$status."");
+				header("Content-Type: ".$content_type);
+				$send = json_encode(["status"=>$status,"body"=>$body]);
+				die($send);
+		}
 		
 	}
 	public function clean_url($str, $replace=array(), $delimiter='-') {
@@ -291,7 +320,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 		$uri = '/' . trim($uri, '/');
 		return $uri;
 	}
-	protected function middleware($call=NULL,$route_args=[]){
+	public function middleware($call=NULL,$route_args=[]){
 		if($call!=NULL){
 			if(is_string($call)){
 					$splitC = explode('::',$call);
@@ -327,7 +356,16 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 
 		}
 	}
-	private function switchPage($argUrl,$callback,$middleware=false,$check_auth=true){
+	private function switchPage($argUrl,$callback,$middleware=false,$check_auth=true){ 
+		# PRE URL SECTION
+		if($this->pre_url!=""){
+			if($argUrl!='/'){ # not equal to home
+				$argUrl = $this->pre_url.$argUrl; # Set pre url : $this->pre_url
+			}else{
+				$argUrl = $this->pre_url; # Home
+			}
+		}
+		# PRE URL SECTION
 		if(isset($this->route_url[$this->http_method]) && in_array($argUrl,$this->route_url[$this->http_method])){
 			die($this->setHeader("500",$this->http_method.': Duplicate URL called '.$argUrl.' multiple times called '));
 		}else{
@@ -453,11 +491,14 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 					    }else{
 					    	$pattern = "@^" . preg_replace('/\\\:[a-zA-Z0-9\_\-]+/', $rep_pattern, preg_quote($route['url'])) . "$@D";
 					    }
+						
+						
 				        /* data type base*/
 						#$pattern = "@^" . preg_replace('/\\\:[a-zA-Z0-9\_\-]+/', $rep_pattern, preg_quote($route['url'])) . "$@D";
 	        			$matches = $route_args = Array();
 	        			if(isset($this->route_url[$this->http_method]) && $route['method']==$this->http_method && preg_match($pattern, self::getCurrentUri(), $matches)){
 	        			  array_shift($matches); 
+
 	        			  if(count($matches) > 0){
 	        			  		#print_r(self::get_colon_vars($route_original['url'])); #print_r($matches);
 				            	$route_args = array_combine(self::get_colon_vars($route_original['url']),$matches);

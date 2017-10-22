@@ -64,6 +64,6 @@ echo clean_color($colors->getColoredString("curl get:fullurl		", "green", "") . 
 # Server PORT Command
 echo clean_color($colors->getColoredString("[ Server Command ] curl", "brown", "") . "\n");
 
-echo clean_color($colors->getColoredString("server port:8080		", "green", "") . "	Set new port\n");
+echo clean_color($colors->getColoredString("server port:8080		", "green", "") . "	Create new server\n");
 
 echo "\n";

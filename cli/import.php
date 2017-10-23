@@ -72,7 +72,7 @@ class import{
 		if(is_dir($module)){
 		  	$msg = "\033[0;31m".$fileName." module already exist.\033[0m \n";
 		}else{ 
-		  if(!is_dir($c_dir)) mkdir($c_dir,777);
+		  if(!is_dir($c_dir)){ $uold = umask(0); mkdir($c_dir,0777,true); umask($uold); }
 		  if(is_dir($c_dir) && is_writable($c_dir)){
 		  	# Download from server & extract
 			$url = $this->server_uri.$c_dir."/".strtolower($fileName).".zip";
@@ -95,9 +95,9 @@ class import{
 					$msg = "\033[0;31mSorry, Module `".strtolower($fileName)."` is not available. \033[0m \n";
 			}
 		  }else{
-		  			$msg = "\033[0;31mPermission denied. coult't import ".$c_dir."  \033[0m \n";
+		  			$msg = "\033[0;31mPermission denied modules directory. coult't import ".$c_dir."  \033[0m \n";
 		  }
 		}
 		return $msg;
-	}
+	} 
 }

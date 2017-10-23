@@ -121,7 +121,11 @@ function DBC($params = '', $query_builder_override = NULL)
 
 	if ( ! isset($query_builder) OR $query_builder === TRUE)
 	{
-		require_once(BASEPATH.'database/DB_query_builder.php');
+		if(DB_STATUS == true){
+			require_once(BASEPATH.'database/DB_query_builder.php');
+		}else{
+			require_once(BASEPATH.'database/DB_query_builder_sh.php');
+		}
 		if ( ! class_exists('CI_DB', FALSE))
 		{
 			/**

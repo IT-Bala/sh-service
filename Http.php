@@ -7,7 +7,7 @@ require_once 'Input.php';
 require_once 'dbc/DB.php';
 class Http{ var $http_method; public $db; protected $route_url=[]; public $next_object=[]; public $middleware; public $pre_url=''; 
 	public function Http(){ set_error_handler('getError');
-		$this->http_method = $_SERVER['REQUEST_METHOD'];
+		$this->http_method = $_SERVER['REQUEST_METHOD']; 
 		try{
 			if(DB_STATUS == true){
 				/*$this->db = new dbc([
@@ -41,7 +41,10 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 					'failover' => array(),
 					'save_queries' => TRUE
 				);
+
 				$this->db = self::db(); #DBC($db['default']);
+			}else{
+				$this->db = self::db();
 			}
 		}catch(Exception $e){
 			if($e){
@@ -117,7 +120,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			}
 			return $callStack;	
 		}else{
-			die($this->setHeader(500,"Enble DB_STATUS in config.php"));
+			die($this->setHeader(500,"Enable DB_STATUS in config.php"));
 		}
 	}
 	public function getDynamicContent($url,$table){ #$datas = $this->db->select("tbl_routes","*");
@@ -614,34 +617,33 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 				if(class_exists($args[0]) && $object==true) return new $args[0];
 			}
 	}
-	public static function db(){
-		if(DB_STATUS == true){
-			
-			$active_group = 'default';
-			$query_builder = TRUE;
-			$db['default'] = array(
-				'dsn'	=> DNS,
-				'hostname' => HOST,
-				'username' => USERNAME,
-				'password' => PASSWORD,
-				'database' => DATABASE,
-				'dbdriver' => DATABASE_TYPE,
-				'dbprefix' => DATABASE_PREFIX,
-				'pconnect' => FALSE,
-				'db_debug' => (ENVIRONMENT !== 'production'),
-				'cache_on' => FALSE,
-				'cachedir' => '',
-				'char_set' => 'utf8',
-				'dbcollat' => 'utf8_general_ci',
-				'swap_pre' => '',
-				'encrypt' => FALSE,
-				'compress' => FALSE,
-				'stricton' => FALSE,
-				'failover' => array(),
-				'save_queries' => TRUE
-			);
-			return DBC($db['default']);
-		}else{ die($this->setHeader(500,"Enble DB_STATUS in config.php")); }
+	public static function db(){ 
+					
+		$active_group = 'default';
+		$query_builder = TRUE;
+		$db['default'] = array(
+			'dsn'	=> DNS,
+			'hostname' => HOST,
+			'username' => USERNAME,
+			'password' => PASSWORD,
+			'database' => DATABASE,
+			'dbdriver' => DATABASE_TYPE,
+			'dbprefix' => DATABASE_PREFIX,
+			'pconnect' => FALSE,
+			'db_debug' => (ENVIRONMENT !== 'production'),
+			'cache_on' => FALSE,
+			'cachedir' => '',
+			'char_set' => 'utf8',
+			'dbcollat' => 'utf8_general_ci',
+			'swap_pre' => '',
+			'encrypt' => FALSE,
+			'compress' => FALSE,
+			'stricton' => FALSE,
+			'failover' => array(),
+			'save_queries' => TRUE
+		);
+		return DBC($db['default']);
+		
 	}
 }
 function http(){
@@ -651,7 +653,7 @@ function db(){
 	if(DB_STATUS == true){
 		$dbc = new Http();
 		return $dbc->db;
-	}else{ die($this->setHeader(500,"Enble DB_STATUS in config.php")); }
+	}else{ die($dbc->setHeader(500,"Enable DB_STATUS in config.php")); }
 }
 function getError($number, $msg, $file, $line, $vars){
 	   $error = debug_backtrace(); #var_dump($error);

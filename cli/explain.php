@@ -302,7 +302,7 @@ class explain{
 					    }
 					} 
 				}
-	
+	                        $equalTo = "";
 				echo "\n================= ".clean_color($colors->getColoredString("[ ".strtoupper($routes)." ROUTES ]", "yellow", "") )." =================\n\n";
 				foreach ($http_routes as $filename => $routes) {
 						$fileLength = strlen($filename);

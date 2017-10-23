@@ -56,13 +56,19 @@ echo clean_color($colors->getColoredString("[ Import Command ] import | imp", "b
 echo clean_color($colors->getColoredString("import package:packagename	", "green", "") . "	Import package\n");
 echo clean_color($colors->getColoredString("import module:modulename	", "green", "") . "	Import module\n\n");
 
+# Compile Command
+echo clean_color($colors->getColoredString("[ Compile Extender Command ] compile | exe", "brown", "") . "\n");
+
+echo clean_color($colors->getColoredString("compile extender		", "green", "") . "	Compile extender\n\n");
+
+
 # Curl Command
 echo clean_color($colors->getColoredString("[ Curl Command ] curl", "brown", "") . "\n");
 
 echo clean_color($colors->getColoredString("curl get:fullurl		", "green", "") . "	Get url results\n\n");
 
 # Server PORT Command
-echo clean_color($colors->getColoredString("[ Server Command ] curl", "brown", "") . "\n");
+echo clean_color($colors->getColoredString("[ Server Command ] server | -s", "brown", "") . "\n");
 
 echo clean_color($colors->getColoredString("server port:8080		", "green", "") . "	Create new server\n");
 

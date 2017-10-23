@@ -77,8 +77,8 @@ class explain{
 		  $colors = new Colors();
 		  //if(!is_dir($init_dir)) mkdir($init_dir,777);
 		  $routes = strtolower($routes);
-		  $msg = "\n";
-		  if($routes!=NULL){ $http_routes = [];
+		  $msg = "\n"; $routes_types = array("all","get","post","put","delete","page");
+		  if($routes!=NULL && in_array($routes, $routes_types)){ $http_routes = [];
 
 		  		# Index Routes List
 				$file = 'index.php';
@@ -318,7 +318,7 @@ class explain{
 				echo clean_color($colors->getColoredString("\n".$equalTo, "green", "") );
 
 		  }else{
-		  	$msg = "\033[0;31mExtender ".$extender." does not exist in ".$c_dir."  \033[0m \n";
+		  	$msg = "\033[0;31mRoutes ".$routes." does not exist in routes  \033[0m \n";
 		  }
 		
 		return $msg;

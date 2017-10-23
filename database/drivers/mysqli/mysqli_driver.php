@@ -66,7 +66,11 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 * @return	object
 	 */
 	public function __call($name,$args){
-		die('<p align="center">Database Error : '.$name.'() method is invalid');
+		if(DB_STATUS == true){
+			die('<p align="center">Database Error : '.$name.'() method is invalid');
+		}else{
+			die("<p align='center'>Database connection failed. <br> Enable DB_STATUS in config.php");
+		}
 	}
 	public function db_connect($persistent = FALSE)
 	{

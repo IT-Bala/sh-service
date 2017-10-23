@@ -3,8 +3,8 @@
 class compile{
 	var $server_uri;
 	public function extender(){ $msg=BAD_FORMAT(); $c_dir = 'extender'; $init_dir = $c_dir.'/init';
-		
-		  if(!is_dir($init_dir)) mkdir($init_dir,777);
+		  
+		  if(!is_dir($init_dir)){ $uold = umask(0); mkdir($init_dir,0777,true); umask($uold); }
 
 		  if(is_dir($init_dir) && is_writable($init_dir)){
 			  	# Move extender files to init folder routes

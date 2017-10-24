@@ -13,6 +13,7 @@ define("CONTROLLER_PATH","controller/");
 define("MODEL_PATH","model/");
 define("HTML_PATH","html/");
 define("LIBRARY_PATH","library/");
+define("LANG_PATH","language/");
 define("EXT_PATH","extender/");
 define("CMS_PATH","cms/");
 

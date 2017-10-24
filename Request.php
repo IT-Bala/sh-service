@@ -42,4 +42,24 @@ class Request{
 			$_= $requestParams = json_decode($input, true);
 		} return $_;
 	}
+	public function label(){ $args = func_get_args();
+		# language must be a session dynamic variable
+		$en = ($this->session->get("lang")!="")?$this->session->get("lang"):"en";
+		if(is_dir(LANG_PATH.$en)){
+			foreach ( glob(LANG_PATH.$en."/*.php") as $file){
+			        if($file != "") require_once $file;
+			}
+			if(isset($lang)){
+				if(count($args) == 1){
+					return (isset($lang[$args[0]])) ? $lang[$args[0]] : '';
+				}else if(count($args) >= 2){
+					$key = $args[0];
+					array_shift($args);
+					return  (isset($lang[$key])) ? vsprintf($lang[$key],$args) : '';
+				}
+			}
+			
+		}
+
+	}
 }

@@ -89,7 +89,7 @@ class create{
 
 		$table = $fileName; $id    = $table.'_id'; $dollar = '$';
 		$message = "<?php\nif(!defined('SHA')) die('Access denied!');\n
-# IF NOT CREATED TABLE YOU COULD CHANGE USING THIS API CALL ".$table."
+# If not created table using this api call can create table ".$table."
 Http::get('/api/".$table."/init',function(".$dollar."app){
 	".$dollar."app->db->query(\"CREATE TABLE IF NOT EXISTS `".$table."`(
 		 `".$id."` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -153,24 +153,29 @@ Http::get('/api/".$table."/(int):id',function(".$dollar."app,".$dollar."req){
 });\n?>";
 		
 		if (file_exists($file)){
-		  	$rmsg = "\033[0;31m".ucfirst($fileName)." ".$c_dir." already exist.\033[0m \n";
+		  	$rmsg = "\033[0;31m".ucfirst($fileName)." already exist in ".$c_dir.".\033[0m \n";
 		} else{
 		  if(is_dir($c_dir) && is_writable($c_dir)){
-		  	$fh = fopen($file, 'w');
-		    fwrite($fh, $message."\n");
-		    $rmsg = "\033[0;32m".ucfirst($c_dir).' '.ucfirst($fileName).' has been created'."\033[0m \nGo to ".$file." create your methods and access easily.\n";
-		    fclose($fh);
-		    // if created api crud create table
-		    db()->query("CREATE TABLE IF NOT EXISTS `".strtolower($table)."`(
-			 `".$id."` bigint(20) NOT NULL AUTO_INCREMENT,
-			 `title` varchar(100) DEFAULT NULL,
-			 `message` varchar(400) DEFAULT NULL,
-			 `status` tinyint(4) DEFAULT NULL COMMENT '{0=>inactive,1=>active}',
-			 `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			 PRIMARY KEY (`".strtolower($id)."`),
-			 KEY `title` (`title`),
-			 KEY `message` (`message`)
-			) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1");
+		  	// if created api crud create table
+		  	if(db()->table_exists(strtolower($table))){
+		  		$rmsg = "\033[0;31mSorry, ".strtolower($fileName)." table is already exist, could not create api:".strtolower($fileName).".\033[0m \n";
+		  	}else{
+			    $query = db()->query("CREATE TABLE IF NOT EXISTS `".strtolower($table)."`(
+				 `".$id."` bigint(20) NOT NULL AUTO_INCREMENT,
+				 `title` varchar(100) DEFAULT NULL,
+				 `message` varchar(400) DEFAULT NULL,
+				 `status` tinyint(4) DEFAULT NULL COMMENT '{0=>inactive,1=>active}',
+				 `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				 PRIMARY KEY (`".strtolower($id)."`),
+				 KEY `title` (`title`),
+				 KEY `message` (`message`)
+				) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1");
+
+			  	$fh = fopen($file, 'w');
+			    fwrite($fh, $message."\n");
+			    $rmsg = "\033[0;32m".ucfirst($c_dir).' '.ucfirst($fileName).' has been created'."\033[0m \nGo to ".$file." create your methods and access easily.\n";
+			    fclose($fh);
+		    }
 
 		  }else{
 		  	$rmsg = "\033[0;31mPermission denied. coult't create ".$c_dir."  \033[0m \n";

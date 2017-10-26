@@ -5,9 +5,12 @@ require_once 'config.php';
 require 'autoload.php';
 require_once 'Input.php';
 require_once 'dbc/DB.php';
+
 class Http{ var $http_method; public $db; protected $route_url=[]; public $next_object=[]; public $middleware; public $pre_url=''; 
 	public function Http(){ set_error_handler('getError');
-		$this->http_method = $_SERVER['REQUEST_METHOD']; 
+		$this->http_method = $_SERVER['REQUEST_METHOD'];
+		$this->input = new Input;
+		
 		try{
 			if(DB_STATUS == true){
 				/*$this->db = new dbc([
@@ -52,7 +55,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 			}
 		}
 		
-		$this->input = new Input;
+
 	}
 	public function base(){ $args = func_get_args(); $route_args = [];
 		if(count($args) >=1){
@@ -220,6 +223,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 	}
 	private static function setHeader($status,$body=""){
 		if($status!=""){
+			header("Access-Control-Allow-Origin: *");
 			header("HTTP/1.1 ".$status."");
 			header("Content-Type: application/json");
 			return json_encode(["status"=>$status,"body"=>$body]);
@@ -238,6 +242,7 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 					$body = $args[1];
 					$content_type = $args[2];
 				}
+				header("Access-Control-Allow-Origin: *");
 				header("HTTP/1.1 ".$status."");
 				header("Content-Type: ".$content_type);
 				$send = json_encode(["status"=>$status,"body"=>$body]);

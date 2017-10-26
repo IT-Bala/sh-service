@@ -59,7 +59,20 @@ class remove{
 		    }else{
 		  		$msg = "\033[0;31mPermission denied. coult't remove ".$c_dir."  \033[0m \n";
 		    }
-		} else {
+		} else { 
+		  $msg = "\033[0;31m".ucfirst($fileName)." ".$c_dir." does not exist.\033[0m \n";
+		}
+		return $msg;
+	}
+	public function api($fileName){ $msg=BAD_FORMAT(); $c_dir = 'extender/init'; $file = $c_dir.'/'.ucfirst($fileName.'.php');
+		if (file_exists($file)){
+			if(is_dir($c_dir) && is_writable($c_dir) && is_readable($file)){ remove::confirm();
+		  		unlink($file);
+		  		$msg = "\033[0;32m".'API '.ucfirst($fileName).' has been removed permanently'."\033[0m \n";
+		    }else{
+		  		$msg = "\033[0;31mPermission denied. coult't remove ".$c_dir."  \033[0m \n";
+		    }
+		} else { 
 		  $msg = "\033[0;31m".ucfirst($fileName)." ".$c_dir." does not exist.\033[0m \n";
 		}
 		return $msg;

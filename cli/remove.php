@@ -78,10 +78,14 @@ class remove{
 		  		$msg = "\033[0;31mPermission denied. coult't remove ".$c_dir."  \033[0m \n";
 		    }
 		}else{ 
-		  if($dTc == '-t' || $dTc == '-table'){
-  			db()->query("DROP TABLE IF EXISTS `".strtolower($fileName)."`");
-  		  }
 		  $msg = "\033[0;31m".ucfirst($fileName)." ".$c_dir." does not exist.\033[0m \n";
+		  if($dTc == '-t' || $dTc == '-table'){
+		  	if(db()->table_exists(strtolower($fileName))){
+	  			db()->query("DROP TABLE IF EXISTS `".strtolower($fileName)."`");
+	  			$msg = "\033[0;32m".'Table '.strtolower($fileName).' has been removed permanently'."\033[0m \n";
+	  			$msg .= "\033[0;31m".ucfirst($fileName)." ".$c_dir." does not exist.\033[0m \n";
+  			}
+  		  }
 		}
 		return $msg;
 	}

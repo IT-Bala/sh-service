@@ -32,7 +32,8 @@ echo clean_color($colors->getColoredString("remove library:libraryname	", "green
 echo clean_color($colors->getColoredString("remove package:packagename	", "green", "") . "	Remove package\n");
 echo clean_color($colors->getColoredString("remove extender:extendername	", "green", "") . "	Remove extender\n");
 echo clean_color($colors->getColoredString("remove module:modulename	", "green", "") . "	Remove module\n");
-echo clean_color($colors->getColoredString("remove api:apiname		", "green", "") . "	Remove api CRUD\n\n");
+echo clean_color($colors->getColoredString("remove api:apiname		", "green", "") . "	Remove api CRUD\n");
+echo clean_color($colors->getColoredString("remove api:apiname -t		", "green", "") . "	Remove api CRUD with table\n\n");
 
 # Show | List Command
 echo clean_color($colors->getColoredString("[ List Command ] show | list | ls", "brown", "") . "\n");

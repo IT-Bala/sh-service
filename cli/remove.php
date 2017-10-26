@@ -1,5 +1,6 @@
 <?php
 # CLI command remove
+require_once 'db.php';
 class remove{
 	public function confirm(){ ob_start();
 		$message   =  "Are you sure want to remove permanently [y/N] :";
@@ -68,6 +69,7 @@ class remove{
 		if (file_exists($file)){
 			if(is_dir($c_dir) && is_writable($c_dir) && is_readable($file)){ remove::confirm();
 		  		unlink($file);
+		  		db()->query("DROP TABLE `".strtolower($fileName)."`");
 		  		$msg = "\033[0;32m".'API '.ucfirst($fileName).' has been removed permanently'."\033[0m \n";
 		    }else{
 		  		$msg = "\033[0;31mPermission denied. coult't remove ".$c_dir."  \033[0m \n";

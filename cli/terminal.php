@@ -62,6 +62,9 @@ if(isset($argv[1]) && $argv[1]!=''){
 					case 'module':
 						echo clean_color(remove::module($typeName));
 					break;
+					case 'api':
+						echo clean_color(remove::api($typeName));
+					break;
 										
 					default:
 						echo BAD_FORMAT();

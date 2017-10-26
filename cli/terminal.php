@@ -63,7 +63,8 @@ if(isset($argv[1]) && $argv[1]!=''){
 						echo clean_color(remove::module($typeName));
 					break;
 					case 'api':
-						echo clean_color(remove::api($typeName));
+						$dropTable = (isset($argv[3]))?$argv[3]:"";
+						echo clean_color(remove::api($typeName,$dropTable));
 					break;
 										
 					default:

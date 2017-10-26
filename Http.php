@@ -7,7 +7,7 @@ require_once 'Input.php';
 require_once 'dbc/DB.php';
 
 class Http{ var $http_method; public $db; protected $route_url=[]; public $next_object=[]; public $middleware; public $pre_url=''; 
-	public function Http(){ set_error_handler('getError');
+	public function __construct(){ set_error_handler('getError');
 		$this->http_method = $_SERVER['REQUEST_METHOD'];
 		$this->input = new Input;
 		

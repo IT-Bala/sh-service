@@ -82,7 +82,10 @@ class create{
 		return $msg;
 	}
 	# Create CRUD API
-	public function api($fileName){ $msg=BAD_FORMAT(); $c_dir = 'extender'; $file = $c_dir.'/'.ucfirst($fileName.'.php');
+	public function api($fileName){ $msg=BAD_FORMAT(); $c_dir = 'extender/init'; $file = $c_dir.'/'.ucfirst($fileName.'.php');
+		
+		if(!is_dir($c_dir)){ $uold = umask(0); mkdir($c_dir,0777,true); umask($uold); }
+
 		$table = $fileName; $id    = $table.'_id'; $dollar = '$';
 		$message = "<?php\nif(!defined('SHA')) die('Access denied!');\n
 Http::get('/api/".$table."/init',function(".$dollar."app){

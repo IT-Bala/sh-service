@@ -18,6 +18,11 @@ echo clean_color($colors->getColoredString("create library:libraryname	", "green
 echo clean_color($colors->getColoredString("create package:packagename	", "green", "") . "	Create package\n");
 echo clean_color($colors->getColoredString("create extender:extendername	", "green", "") . "	Create extender\n\n");
 
+# Create Command
+echo clean_color($colors->getColoredString("[ Create API CRUD ]", "brown", "") . "\n");
+
+echo clean_color($colors->getColoredString("create api:apiname 		", "green", "") . "	Create api CRUD\n\n");
+
 # Remove Command
 echo clean_color($colors->getColoredString("[ Remove Command ] remove | rm", "brown", "") . "\n");
 
@@ -26,7 +31,8 @@ echo clean_color($colors->getColoredString("remove model:modelname		", "green", 
 echo clean_color($colors->getColoredString("remove library:libraryname	", "green", "") . "	Remove library\n");
 echo clean_color($colors->getColoredString("remove package:packagename	", "green", "") . "	Remove package\n");
 echo clean_color($colors->getColoredString("remove extender:extendername	", "green", "") . "	Remove extender\n");
-echo clean_color($colors->getColoredString("remove module:modulename	", "green", "") . "	Remove module\n\n");
+echo clean_color($colors->getColoredString("remove module:modulename	", "green", "") . "	Remove module\n");
+echo clean_color($colors->getColoredString("remove api:apiname		", "green", "") . "	Remove api CRUD\n\n");
 
 # Show | List Command
 echo clean_color($colors->getColoredString("[ List Command ] show | list | ls", "brown", "") . "\n");
@@ -50,16 +56,17 @@ echo clean_color($colors->getColoredString("explain routes:page		", "green", "")
 echo clean_color($colors->getColoredString("explain extender:extendername	", "green", "") . "	Explain extender routes\n");
 echo clean_color($colors->getColoredString("explain module:modulename	", "green", "") . "	Explain module routes\n\n");
 
+# Compile Command
+echo clean_color($colors->getColoredString("[ Compile Extender Command ] compile | exe", "brown", "") . "\n");
+
+echo clean_color($colors->getColoredString("compile extender		", "green", "") . "	Moving all extender to init\n");
+echo clean_color($colors->getColoredString("compile extender:filename	", "green", "") . "	Moving extender to init\n\n");
+
 # Import Command
 echo clean_color($colors->getColoredString("[ Import Command ] import | imp", "brown", "") . "\n");
 
 echo clean_color($colors->getColoredString("import package:packagename	", "green", "") . "	Import package\n");
 echo clean_color($colors->getColoredString("import module:modulename	", "green", "") . "	Import module\n\n");
-
-# Compile Command
-echo clean_color($colors->getColoredString("[ Compile Extender Command ] compile | exe", "brown", "") . "\n");
-
-echo clean_color($colors->getColoredString("compile extender		", "green", "") . "	Compile extender\n\n");
 
 
 # Curl Command

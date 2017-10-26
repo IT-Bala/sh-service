@@ -65,16 +65,22 @@ class remove{
 		}
 		return $msg;
 	}
-	public function api($fileName){ $msg=BAD_FORMAT(); $c_dir = 'extender/init'; $file = $c_dir.'/'.ucfirst($fileName.'.php');
+	public function api($fileName,$dropTable=NULL){ $msg=BAD_FORMAT(); $c_dir = 'extender/init'; $file = $c_dir.'/'.ucfirst($fileName.'.php');
+		$dTc = strtolower($dropTable);
 		if (file_exists($file)){
 			if(is_dir($c_dir) && is_writable($c_dir) && is_readable($file)){ remove::confirm();
-		  		unlink($file);
-		  		db()->query("DROP TABLE `".strtolower($fileName)."`");
+		  		unlink($file);		  		
+		  		if($dTc == '-t' || $dTc == '-table'){
+		  			db()->query("DROP TABLE IF EXISTS `".strtolower($fileName)."`");
+		  		}
 		  		$msg = "\033[0;32m".'API '.ucfirst($fileName).' has been removed permanently'."\033[0m \n";
 		    }else{
 		  		$msg = "\033[0;31mPermission denied. coult't remove ".$c_dir."  \033[0m \n";
 		    }
-		} else { 
+		}else{ 
+		  if($dTc == '-t' || $dTc == '-table'){
+  			db()->query("DROP TABLE IF EXISTS `".strtolower($fileName)."`");
+  		  }
 		  $msg = "\033[0;31m".ucfirst($fileName)." ".$c_dir." does not exist.\033[0m \n";
 		}
 		return $msg;

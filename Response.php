@@ -2,6 +2,7 @@
 class Response{
 	private static function setHeader($status,$body=""){
 		if($status!=""){
+			header("Access-Control-Allow-Origin: *");
 			header("HTTP/1.1 ".$status."");
 			header("Content-Type: application/json");
 			return json_encode(["status"=>$status,"body"=>$body]);
@@ -28,6 +29,7 @@ class Response{
 					$body = $args[1];
 					$content_type = $args[2];
 				}
+				header("Access-Control-Allow-Origin: *");
 				header("HTTP/1.1 ".$status."");
 				header("Content-Type: ".$content_type);
 				$send = json_encode(["status"=>$status,"body"=>$body]);

@@ -1,5 +1,6 @@
 <?php
 require_once 'db.php';
+require_once 'is_exist.php';
 if(isset($argv[1]) && $argv[1]!=''){
 	if(strtolower($argv[1]) == 'create' || strtolower($argv[1]) == 'mk'){ require_once 'create.php';
 		if(isset($argv[2]) && $argv[2]!=''){
@@ -75,6 +76,7 @@ if(isset($argv[1]) && $argv[1]!=''){
 			}
 			
 			if($status == 'sh'){ $url = $baseUrl = $url.'?cmd=';
+				echo "Remote sh service connected successfuly.\nFor help enter -h\n";
 				remote_sh_cmd($url);
 			}else{
 				echo "Sorry, could not find sh service.";
@@ -89,7 +91,7 @@ if(isset($argv[1]) && $argv[1]!=''){
 				$type = strtolower($whatAt[0]);
 				$typeName = strtolower($whatAt[1]);
 				$rm_api = NULL;
-				if($type == 'api'){
+				if($type == 'api' && count($argv) == 5){
 					$rm_api  = (isset($argv[3]))?$argv[3]:NULL;
 					$prompt  = (isset($argv[4]))?$argv[4]:NULL;
 				}else{
@@ -115,7 +117,6 @@ if(isset($argv[1]) && $argv[1]!=''){
 						echo clean_color(remove::module($typeName,$prompt));
 					break;
 					case 'api':
-						#echo $typeName,$rm_api,$prompt;
 						echo clean_color(remove::api($typeName,$rm_api,$prompt));
 					break;
 										
@@ -314,11 +315,61 @@ if(isset($argv[1]) && $argv[1]!=''){
 			print $message;
 			flush();
 			ob_flush();
-			$cmd  =  strtolower(trim( fgets( STDIN ) ));			
-			echo shell_exec("php sh ".$cmd);
+			$cmd  =  strtolower(trim( fgets( STDIN ) ));
+			$explode = explode(" ",$cmd);
+			$baseCmd = strtolower($explode[0]);
+			if($baseCmd == 'rm' || $baseCmd == 'remove'){
+				if(isset($explode[1]) && $explode[1]!=''){
+					$whatAt = explode(":", $explode[1]);
+					if(count($whatAt) == 2){
+						$type = strtolower($whatAt[0]);
+						$typeName = strtolower($whatAt[1]);
+						$rm_api = NULL;
+						if($type == 'api'){
+							$rm_api  = (isset($explode[2]))?$explode[2]:NULL;
+							$prompt  = (isset($explode[3]))?$explode[3]:NULL;
+							if(is::$type($typeName,$rm_api,$prompt) != 1){
+								#echo $type;
+								echo clean_color(is::$type($typeName,$rm_api,$prompt));
+								ob_get_flush();
+							    sh_cmd();
+							}
+						}else{
+							$prompt  = (isset($explode[2]))?$explode[2]:NULL;
+							if(is::$type($typeName,$prompt) != 1){
+								echo clean_color(is::$type($typeName,$prompt));
+								ob_get_flush();
+							    sh_cmd();
+							}
+						}
+						
+					}
+				}
+				
+				ob_get_flush();
+				ob_start();
+				$message   =  "Are you sure want to remove permanently [y/N] :";
+				print $message;
+				flush();
+				ob_flush();
+				$confirmation  =  strtolower(trim( fgets( STDIN ) ));
+				if ( $confirmation !== 'y' ) {
+				   # Other keywords to exit
+				   ob_get_flush();
+				   sh_cmd();
+				}else{
+					echo shell_exec("php sh ".$cmd." y");
+					ob_get_flush();
+					sh_cmd();
+				}
+				
+			}else{
+				echo shell_exec("php sh ".$cmd);
+				ob_get_flush();
+				sh_cmd();
+			}
 			#$output = ob_get_contents();
-			ob_get_flush();
-			sh_cmd();
+			
 		}
 		sh_cmd();
 }

@@ -1,6 +1,37 @@
 <?php
 require_once 'db.php';
 require_once 'is_exist.php';
+require_once 'curl.php';
+
+function remote_sh_cmd($url){ $baseUrl = $url;
+		ob_start();
+		$parse = parse_url($baseUrl); 
+		$message   =  "\n".'$'.$parse['scheme'].'://'.$parse['host'].substr(strstr($parse['path'],'service.php',true),0,-1).':$sh>';
+		print $message;
+		flush();
+		ob_flush();
+		$cmd  =  strtolower(trim( fgets( STDIN ) ));
+		if($cmd == 'exit') exit(0);				
+		$cmd = str_replace(" ","/",$cmd);
+		$basecmd = strstr($cmd,"/",true);
+		$url = $url.$cmd;
+		if(isset($basecmd) && $basecmd == 'curl'){
+			echo "Sorry, Remote curl not allowed.";
+		}else if(isset($basecmd) && $basecmd == 'remote' || $basecmd == '-i'){ 
+			echo "Sorry, Remote service not allowed inner of remote.";
+		}else{ $cmd_output = '';
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL,$url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			$cmd_output = curl_exec($ch);
+			curl_close ($ch);
+			echo clean_color($cmd_output);
+		}
+		#$output = ob_get_contents();
+		ob_get_flush();
+		remote_sh_cmd($baseUrl);
+}
+
 if(isset($argv[1]) && $argv[1]!=''){
 	if(strtolower($argv[1]) == 'create' || strtolower($argv[1]) == 'mk'){ require_once 'create.php';
 		if(isset($argv[2]) && $argv[2]!=''){
@@ -38,7 +69,7 @@ if(isset($argv[1]) && $argv[1]!=''){
 		}else{
 			echo BAD_FORMAT();
 		}
-	}elseif(strtolower($argv[1]) == 'remote' || strtolower($argv[1]) == '-i'){ require_once 'curl.php';
+	}elseif(strtolower($argv[1]) == 'remote' || strtolower($argv[1]) == '-i'){ 
 
 		if(isset($argv[2]) && $argv[2]!=''){
 			$domain = rtrim($argv[2],"/");
@@ -48,32 +79,6 @@ if(isset($argv[1]) && $argv[1]!=''){
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $status = curl_exec($ch);
             curl_close ($ch);
-			
-			function remote_sh_cmd($url){ $baseUrl = $url;
-				ob_start();
-				$parse = parse_url($baseUrl); 
-				$message   =  "\n".'$'.$parse['scheme'].'://'.$parse['host'].substr(strstr($parse['path'],'service.php',true),0,-1).':$sh>';
-				print $message;
-				flush();
-				ob_flush();
-				$cmd  =  strtolower(trim( fgets( STDIN ) ));				
-				$cmd = str_replace(" ","/",$cmd);
-				$basecmd = strstr($cmd,"/",true);
-				$url = $url.$cmd;
-				if($basecmd == 'curl'){
-					echo "Sorry, Remote curl not allowed.";
-				}else{ $cmd_output = '';
-					$ch = curl_init();
-					curl_setopt($ch, CURLOPT_URL,$url);
-					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-					$cmd_output = curl_exec($ch);
-					curl_close ($ch);
-					echo clean_color($cmd_output);
-				}
-				#$output = ob_get_contents();
-				ob_get_flush();
-				remote_sh_cmd($baseUrl);
-			}
 			
 			if($status == 'sh'){ $url = $baseUrl = $url.'?cmd=';
 				echo "Remote sh service connected successfuly.\nFor help enter -h\n";
@@ -308,6 +313,7 @@ if(isset($argv[1]) && $argv[1]!=''){
 		echo BAD_FORMAT();
 	}
 }else{
+		
 		# $sh : command
 		function sh_cmd(){
 			ob_start();
@@ -316,58 +322,83 @@ if(isset($argv[1]) && $argv[1]!=''){
 			flush();
 			ob_flush();
 			$cmd  =  strtolower(trim( fgets( STDIN ) ));
+			if($cmd == 'exit') exit(0);
 			$explode = explode(" ",$cmd);
-			$baseCmd = strtolower($explode[0]);
-			if($baseCmd == 'rm' || $baseCmd == 'remove'){
-				if(isset($explode[1]) && $explode[1]!=''){
-					$whatAt = explode(":", $explode[1]);
-					if(count($whatAt) == 2){
-						$type = strtolower($whatAt[0]);
-						$typeName = strtolower($whatAt[1]);
-						$rm_api = NULL;
-						if($type == 'api'){
-							$rm_api  = (isset($explode[2]))?$explode[2]:NULL;
-							$prompt  = (isset($explode[3]))?$explode[3]:NULL;
-							if(is::$type($typeName,$rm_api,$prompt) != 1){
-								#echo $type;
-								echo clean_color(is::$type($typeName,$rm_api,$prompt));
-								ob_get_flush();
-							    sh_cmd();
+			if(count($explode) >=2){
+				$baseCmd = strtolower($explode[0]);
+				if($baseCmd == 'rm' || $baseCmd == 'remove'){
+					if(isset($explode[1]) && $explode[1]!=''){
+						$whatAt = explode(":", $explode[1]);
+						if(count($whatAt) == 2){
+							$type = strtolower($whatAt[0]);
+							$typeName = strtolower($whatAt[1]);
+							$rm_api = NULL;
+							if($type == 'api'){
+								$rm_api  = (isset($explode[2]))?$explode[2]:NULL;
+								$prompt  = (isset($explode[3]))?$explode[3]:NULL;
+								if(is::$type($typeName,$rm_api,$prompt) != 1){
+									#echo $type;
+									echo clean_color(is::$type($typeName,$rm_api,$prompt));
+									ob_get_flush();
+									sh_cmd();
+								}
+							}else{
+								$prompt  = (isset($explode[2]))?$explode[2]:NULL;
+								if(is::$type($typeName,$prompt) != 1){
+									echo clean_color(is::$type($typeName,$prompt));
+									ob_get_flush();
+									sh_cmd();
+								}
 							}
-						}else{
-							$prompt  = (isset($explode[2]))?$explode[2]:NULL;
-							if(is::$type($typeName,$prompt) != 1){
-								echo clean_color(is::$type($typeName,$prompt));
-								ob_get_flush();
-							    sh_cmd();
-							}
+							
 						}
-						
 					}
-				}
-				
-				ob_get_flush();
-				ob_start();
-				$message   =  "Are you sure want to remove permanently [y/N] :";
-				print $message;
-				flush();
-				ob_flush();
-				$confirmation  =  strtolower(trim( fgets( STDIN ) ));
-				if ( $confirmation !== 'y' ) {
-				   # Other keywords to exit
-				   ob_get_flush();
-				   sh_cmd();
+					
+					ob_get_flush();
+					ob_start();
+					$message   =  "Are you sure want to remove permanently [y/N] :";
+					print $message;
+					flush();
+					ob_flush();
+					$confirmation  =  strtolower(trim( fgets( STDIN ) ));
+					if ( $confirmation !== 'y' ) {
+					   # Other keywords to exit
+					   ob_get_flush();
+					   sh_cmd();
+					}else{
+						echo shell_exec("php sh ".$cmd." y");
+						ob_get_flush();
+						sh_cmd();
+					}
+					
+				 
+				 
+				}else if($baseCmd == 'remote' || $baseCmd == '-i'){
+					$domain = strstr($cmd," ");				
+					$domain = rtrim($domain,"/");
+					$url = trim($domain."/service.php");
+					$ch = curl_init();
+					curl_setopt($ch, CURLOPT_URL,$url);
+					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+					$status = curl_exec($ch);
+					curl_close ($ch);
+					if($status == 'sh'){ $url = $baseUrl = $url.'?cmd=';
+						echo "Remote sh service connected successfuly.\nFor help enter -h\n";
+						ob_get_flush();
+						remote_sh_cmd($url);
+					}else{
+						echo "Sorry, could not find sh service.";
+					}
 				}else{
-					echo shell_exec("php sh ".$cmd." y");
+					echo shell_exec("php sh ".$cmd);
 					ob_get_flush();
 					sh_cmd();
 				}
-				
-			}else{
-				echo shell_exec("php sh ".$cmd);
-				ob_get_flush();
-				sh_cmd();
-			}
+		  }else{
+			  echo BAD_FORMAT();
+			  ob_get_flush();
+			  sh_cmd();
+		  }
 			#$output = ob_get_contents();
 			
 		}

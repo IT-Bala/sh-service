@@ -42,6 +42,9 @@ class Request{
 			$_= $requestParams = json_decode($input, true);
 		} return $_;
 	}
+	public static function body(){
+		return json_decode(file_get_contents("php://input"));
+	}
 	public function label(){ $args = func_get_args();
 		# language must be a session dynamic variable
 		$en = ($this->session->get("lang")!="")?$this->session->get("lang"):"en";

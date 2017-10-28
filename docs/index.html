@@ -149,9 +149,12 @@
 <h3>Form inputs</h3>
 <pre>
 <code class="language-php">	
-	$app->input->get("name"); OR $app->input->get();
-    $app->input->post("name"); OR $app->input->post();
-    $app->input->request("name"); OR $app->input->request();
+	$req->get("name"); OR $app->input->get();
+    $req->post("name"); OR $app->input->post();
+    $req->request("name"); OR $app->input->request();
+
+    # To retrieve json argument 
+    $req->args("name"); OR $req->args();
 </code> 
 </pre>
 <h3>Database connection</h3>
@@ -314,31 +317,59 @@ $app->get('/users/:id',function($app,$req){
 <code class="language-php">
     [ Command Options ]
 
-    php sh create controller:phper
-
-	[ Options ]
-
 	-v , -version						Display the version
 	-h , -help							Command Help
-
-	[ Create Command ]
+	
+    ProjectFolder>php sh
+    
+	[ Create Command ] create | mk
 	create controller:controllername	Create controller
 	create model:modelname				Create model
 	create library:libraryname			Create library
 	create package:packagename			Create package
 	create extender:extendername		Create extender
 
-	[ Remove Command ]
+	[ Remove Command ] remove | rm
 	remove controller:controllername	Remove controller
 	remove model:modelname				Remove model
 	remove library:libraryname			Remove library
 	remove package:packagename			Remove package
 	remove extender:extendername		Remove extender
 	remove module:modulename			Remove module
+    
+    [ List Command ] ls | list | show
+	ls controllers						Show all controllers
+	ls models							Show all models
+	ls libraries						Show all libraries
+	ls packages							Show all packages
+	ls extenders						Show all extenders
+	ls modules							Show all modules
+    
+    [ Explain Command ] explain | exp
+    explain routes:all					Show all routes
+    explain routes:get					Show all get routes
+    explain routes:post					Show all post routes
+    explain routes:put					Show all put routes
+    explain routes:delete				Show all delete routes
+    explain routes:page					Show all page routes
+	explain extender:extendername		Show all extender routes
+	explain module:modulename			Show all module routes
 
-	[ Import Command ]
+	[ Compile Command ] compile | exe
+	compile extender					Merge extenders (After compile no need to push in to $app->run("") )
+
+	[ Import Command ] import | imp
 	import package:packagename			Import package
 	import module:modulename			Import module
+    
+    [ Curl Command ] curl
+	curl get:fullurl					Get url results
+    
+    [ Remote service Command ] remote | -i
+	php sh remote domain.com			sh remote access
+    
+    [ Server port Command ] server | -s
+	server port:8080					Create new server
 </code> 
 </pre>
 </div>

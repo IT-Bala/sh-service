@@ -57,8 +57,13 @@ if(isset($argv[1]) && $argv[1]!=''){
 				$url = $url.$cmd;
 				if($basecmd == 'curl'){
 					echo "Sorry, Remote curl not allowed.";
-				}else{
-					echo curl::get($url);
+				}else{ $cmd_output = '';
+					$ch = curl_init();
+					curl_setopt($ch, CURLOPT_URL,$url);
+					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+					$cmd_output = curl_exec($ch);
+					curl_close ($ch);
+					echo clean_color($cmd_output);
 				}
 				#$output = ob_get_contents();
 				ob_get_flush();
@@ -290,10 +295,10 @@ if(isset($argv[1]) && $argv[1]!=''){
 function BAD_FORMAT(){
 	return clean_color("\033[0;31msh-service bad format command.\033[0m \n");
 }
-function clean_color($str){
-	 $codes = array("\033[0;32m", "\033[0m", "\033[0;31m","\033[0m","\033[1;33m","\033[0;37m","\033[0;33m");
-	 $rcodes = array("","","","","","","");
-	 if(strtoupper(substr(PHP_OS, 0, 3)) != 'LIN'){
+function clean_color($str){ 
+	 $codes = array("\033[0;32m", "\033[0m", "\033[0;31m","\033[0m","\033[1;33m","\033[0;37m","\033[0;33m","\033[1;33m","\033[43m");
+	 $rcodes = array("","","","","","","","","");
+	 if(strtoupper(substr(PHP_OS, 0, 3)) != 'LIN'){ 
 	 	$str = str_replace($codes,$rcodes, $str);
 	 } return $str;
 }

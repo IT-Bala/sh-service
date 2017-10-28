@@ -3,10 +3,10 @@ if(isset($argv[1]) && $argv[1]!=''){
 	if(strtolower($argv[1]) == 'create' || strtolower($argv[1]) == 'mk'){ require_once 'create.php';
 		if(isset($argv[2]) && $argv[2]!=''){
 			$whatAt = explode(":", $argv[2]);
-			if(count($whatAt) == 2 && $whatAt[1]!=""){
+			if(count($whatAt) == 2){
 				$type = strtolower($whatAt[0]);
 				$typeName = strtolower($whatAt[1]);
-				switch ($type){
+				switch ($type) {
 					case 'controller':
 						echo clean_color(create::controller($typeName));
 					break;
@@ -22,9 +22,6 @@ if(isset($argv[1]) && $argv[1]!=''){
 					case 'package':
 						echo clean_color(create::package($typeName));
 					break;
-					case 'api':
-						echo clean_color(create::api($typeName));
-					break;
 										
 					default:
 						echo BAD_FORMAT();
@@ -36,35 +33,65 @@ if(isset($argv[1]) && $argv[1]!=''){
 		}else{
 			echo BAD_FORMAT();
 		}
+	}elseif(strtolower($argv[1]) == 'remote' || strtolower($argv[1]) == '-i'){ require_once 'curl.php';
+
+		if(isset($argv[2]) && $argv[2]!=''){
+			$domain = rtrim($argv[2],"/");
+			$url = $domain."/service.php";
+			$ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL,$url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $status = curl_exec($ch);
+            curl_close ($ch);
+			
+			function sh_cmd($url){ $baseUrl = $url;
+				ob_start();
+				$message   =  '$sh :';
+				print $message;
+				flush();
+				ob_flush();
+				$cmd  =  strtolower(trim( fgets( STDIN ) ));
+				$cmd = str_replace(" ","/",$cmd);
+				$url = $url.$cmd;				
+				echo curl::get($url);
+				#$output = ob_get_contents();
+				ob_get_flush();
+				sh_cmd($baseUrl);
+			}
+			
+			if($status == 'yes'){ $url = $baseUrl = $url.'?cmd=';
+				sh_cmd($url);
+			}else{
+				echo "Sorry, could not find sh service.";
+			}
+	 	}
+	 
 	}elseif(strtolower($argv[1]) == 'remove' || strtolower($argv[1]) == 'rm'){ require_once 'remove.php';
 
 		if(isset($argv[2]) && $argv[2]!=''){
 			$whatAt = explode(":", $argv[2]);
-			if(count($whatAt) == 2 && $whatAt[1]!=""){
+			if(count($whatAt) == 2){
 				$type = strtolower($whatAt[0]);
 				$typeName = strtolower($whatAt[1]);
+				$prompt  = (isset($argv[3]))?$argv[3]:NULL;
 				switch ($type) {
 					case 'controller':
-						echo clean_color(remove::controller($typeName));
+						echo clean_color(remove::controller($typeName,$prompt));
 					break;
 					case 'model':
-						echo clean_color(remove::model($typeName));
+						echo clean_color(remove::model($typeName,$prompt));
 					break;
 					case 'library':
-						echo clean_color(remove::library($typeName));
+						echo clean_color(remove::library($typeName,$prompt));
 					break;
 					case 'extender':
-						echo clean_color(remove::extender($typeName));
+						echo clean_color(remove::extender($typeName,$prompt));
 					break;
 					case 'package':
-						echo clean_color(remove::package($typeName));
+						echo clean_color(remove::package($typeName,$prompt));
 					break;
 					case 'module':
-						echo clean_color(remove::module($typeName));
-					break;
-					case 'api':
-						$dropTable = (isset($argv[3]))?$argv[3]:"";
-						echo clean_color(remove::api($typeName,$dropTable));
+						echo clean_color(remove::module($typeName,$prompt));
 					break;
 										
 					default:
@@ -82,7 +109,7 @@ if(isset($argv[1]) && $argv[1]!=''){
 		$import = new import();
 		if(isset($argv[2]) && $argv[2]!=''){
 			$whatAt = explode(":", $argv[2]);
-			if(count($whatAt) == 2 && $whatAt[1]!=""){
+			if(count($whatAt) == 2){
 				$type = strtolower($whatAt[0]);
 				$typeName = strtolower($whatAt[1]);
 				switch ($type) {
@@ -106,19 +133,10 @@ if(isset($argv[1]) && $argv[1]!=''){
 	}elseif(strtolower($argv[1]) == 'compile' || strtolower($argv[1]) == 'exe'){ require_once 'compile.php';
 		$compile = new compile();
 		if(isset($argv[2]) && $argv[2]!=''){						
-				$type = $argv[2]; $typeName = '';
-				$whatAt = explode(":", $argv[2]);
-				if(count($whatAt) == 2){
-					$type = strtolower($whatAt[0]);
-					$typeName = strtolower($whatAt[1]);
-				}
+				$type = $argv[2];
 				switch ($type) {
 					case 'extender':
-						if($typeName!=""){# Single
-							echo clean_color($compile->one($typeName));
-						}else{# All
-							echo clean_color($compile->extender());
-						}
+						echo clean_color($compile->extender());
 					break;			
 					default:
 						echo BAD_FORMAT();
@@ -133,7 +151,7 @@ if(isset($argv[1]) && $argv[1]!=''){
 		$explain = new explain();
 		if(isset($argv[2]) && $argv[2]!=''){
 			$whatAt = explode(":", $argv[2]);
-			if(count($whatAt) == 2 && $whatAt[1]!=""){
+			if(count($whatAt) == 2){
 				$type = strtolower($whatAt[0]);
 				$typeName = strtolower($whatAt[1]);
 				switch ($type) {
@@ -200,7 +218,7 @@ if(isset($argv[1]) && $argv[1]!=''){
 		$curl = new curl();
 		if(isset($argv[2]) && $argv[2]!=''){
 			$whatAt = explode(":", $argv[2]);			
-			if(count($whatAt) >=2 && $whatAt[1]!=""){
+			if(count($whatAt) >=2 ){
 				$type = strtolower($whatAt[0]);
 				$whatAt = explode($type.":", $argv[2]);
 				$typeName = strtolower($whatAt[1]);
@@ -226,11 +244,11 @@ if(isset($argv[1]) && $argv[1]!=''){
 		
 		if(isset($argv[2]) && $argv[2]!=''){
 			$whatAt = explode(":", $argv[2]);			
-			if(count($whatAt) >=2 && $whatAt[1]!=""){
+			if(count($whatAt) >=2 ){
 				$type = strtolower($whatAt[0]);
 				$whatAt = explode($type.":", $argv[2]);
 				$port = strtolower($whatAt[1]);
-				shell_exec("php -S localhost:".$port);
+				shell_exec("php -S localhost:".$port);				
 			}else{
 				echo BAD_FORMAT();	
 			}

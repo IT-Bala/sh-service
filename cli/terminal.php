@@ -44,23 +44,29 @@ if(isset($argv[1]) && $argv[1]!=''){
             $status = curl_exec($ch);
             curl_close ($ch);
 			
-			function sh_cmd($url){ $baseUrl = $url;
+			function remote_sh_cmd($url){ $baseUrl = $url;
 				ob_start();
-				$message   =  '$sh :';
+				$parse = parse_url($baseUrl); 
+				$message   =  "\n".'$'.$parse['scheme'].'://'.$parse['host'].substr(strstr($parse['path'],'service.php',true),0,-1).':$sh>';
 				print $message;
 				flush();
 				ob_flush();
-				$cmd  =  strtolower(trim( fgets( STDIN ) ));
+				$cmd  =  strtolower(trim( fgets( STDIN ) ));				
 				$cmd = str_replace(" ","/",$cmd);
-				$url = $url.$cmd;				
-				echo curl::get($url);
+				$basecmd = strstr($cmd,"/",true);
+				$url = $url.$cmd;
+				if($basecmd == 'curl'){
+					echo "Sorry, Remote curl not allowed.";
+				}else{
+					echo curl::get($url);
+				}
 				#$output = ob_get_contents();
 				ob_get_flush();
-				sh_cmd($baseUrl);
+				remote_sh_cmd($baseUrl);
 			}
 			
 			if($status == 'yes'){ $url = $baseUrl = $url.'?cmd=';
-				sh_cmd($url);
+				remote_sh_cmd($url);
 			}else{
 				echo "Sorry, could not find sh service.";
 			}
@@ -266,7 +272,20 @@ if(isset($argv[1]) && $argv[1]!=''){
 		echo BAD_FORMAT();
 	}
 }else{
-		require_once 'commands.php';
+		# $sh : command
+		function sh_cmd(){
+			ob_start();
+			$message   =  "\n".'$sh>';
+			print $message;
+			flush();
+			ob_flush();
+			$cmd  =  strtolower(trim( fgets( STDIN ) ));			
+			echo shell_exec("php sh ".$cmd);
+			#$output = ob_get_contents();
+			ob_get_flush();
+			sh_cmd();
+		}
+		sh_cmd();
 }
 function BAD_FORMAT(){
 	return clean_color("\033[0;31msh-service bad format command.\033[0m \n");

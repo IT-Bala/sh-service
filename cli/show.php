@@ -73,7 +73,7 @@ class show{
 		  }		
 		  return $msg;
 	}
-	public function extender($module=NULL){ $msg=BAD_FORMAT(); $c_dir = 'extender'; $init_dir = $c_dir.'/*';
+	public function extender($module=NULL){ $msg=BAD_FORMAT(); $c_dir = 'extender'; $init_dir = $c_dir.'/.php*';
 		  //if(!is_dir($init_dir)) mkdir($init_dir,777);
 		  require_once 'cli-terminal.php';
 		  $colors = new Colors();
@@ -91,6 +91,25 @@ class show{
 		  }		
 		  return $msg;
 	}
+	public function init($module=NULL){ $msg=BAD_FORMAT(); $c_dir = 'extender/init'; $init_dir = $c_dir.'/*';
+		  //if(!is_dir($init_dir)) mkdir($init_dir,777);
+		  require_once 'cli-terminal.php';
+		  $colors = new Colors();
+		  $msg = "\n";
+		  if($module!=NULL){
+				echo "\n================= ".clean_color($colors->getColoredString("[ ".strtoupper("ALL ".$module."")." ]", "yellow", "") )." =================\n";
+				if(is_dir($c_dir)){					
+					foreach (glob($init_dir) as $file){
+						echo "\n".basename($file)."\n";
+					}
+				}
+
+		  }else{
+		  	$msg = "\033[0;31mExtender ".$module." does not exist in ".$c_dir."  \033[0m \n";
+		  }		
+		  return $msg;
+	}
+
 	public function module($module=NULL){ $msg=BAD_FORMAT(); $c_dir = 'modules'; $init_dir = $c_dir.'/*';
 		  //if(!is_dir($init_dir)) mkdir($init_dir,777);
 		  require_once 'cli-terminal.php';

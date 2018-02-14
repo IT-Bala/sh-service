@@ -20,7 +20,7 @@ class compile{
 				  echo $file."\n";
 				  echo "Moving to ".$init_dir." directory...\n";
 				  echo $destination.basename($file)."\n";
-				  if (copy($file, $destination.basename($file))){
+				  if (copy($file, $destination.strtolower(basename($file)))){
 				    $delete[] = $file;
 				  }
 				}

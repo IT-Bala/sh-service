@@ -374,6 +374,22 @@ if(isset($argv[1]) && $argv[1]!=''){
 		require_once 'commands.php';
 	}elseif(strtolower($argv[1]) == 'status'){
 		echo clean_color("\033[0;32msh-service is running...\033[0m \n");
+	}elseif(strtolower($argv[1]) == 'sudo'){
+		if(isset($argv[2]) && $argv[2]!=''){			
+				$cmd = $argv[2];
+				echo shell_exec($cmd);
+		}else{
+			echo BAD_FORMAT();
+		}
+
+	}elseif(strtolower($argv[1]) == 'cmd'){
+		if(isset($argv[2]) && $argv[2]!=''){		
+				$cmd = $argv[2];
+				echo shell_exec($cmd);
+		}else{
+			echo BAD_FORMAT();
+		}
+
 	}else{
 		echo BAD_FORMAT();
 	}

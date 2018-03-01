@@ -5,7 +5,8 @@ require_once 'config.php';
 require 'autoload.php';
 require_once 'Input.php';
 require_once 'dbc/DB.php';
-
+$en = (Session::get("lang")!="")?Session::get("lang"):"en";
+if(is_dir(LANG_PATH.$en)){foreach ( glob(LANG_PATH.$en."/*.php") as $file){if($file != "") require_once $file;}}
 class Http{ var $http_method; public $db; protected $route_url=[]; public $next_object=[]; public $middleware; public $pre_url=''; 
 	public function __construct(){ set_error_handler('getError');
 		$this->http_method = $_SERVER['REQUEST_METHOD'];
@@ -512,7 +513,42 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 				            	$route_args = array_combine(self::get_colon_vars($route_original['url']),$matches);
 				            }
 				          #die;
-						  if((isset($_SERVER['HTTP_'.SH_KEY]) && $_SERVER['HTTP_'.SH_KEY] == SH_VALUE) || SHA==FALSE || $this->check_auth == FALSE){
+				          global $GLOBALS;
+				          ############################### AUTHENTICATION START ####################################
+				          $auth_head = true;
+							if(SHA==true && array_key_exists("HEAD", $GLOBALS['SH_AUTH']) && count($GLOBALS['SH_AUTH']['HEAD'])>0){
+								$pass_head = 0; $auth_head = false;
+								foreach ($GLOBALS['SH_AUTH']['HEAD'] as $key => $value) {
+									if((isset($_SERVER['HTTP_'.strtoupper($key)]) && $_SERVER['HTTP_'.strtoupper($key)] == $value)){
+										$pass_head += 1;
+									}
+								}
+								if($pass_head == count($GLOBALS['SH_AUTH']['HEAD'])){
+									$auth_head = true;
+								}
+							}
+
+							$auth_basic = true;
+							if(SHA==true && array_key_exists("AUTH", $GLOBALS['SH_AUTH']) && count($GLOBALS['SH_AUTH']['AUTH'])>0){
+								$pass_basic = 0; $auth_basic = false;
+								if (isset($_SERVER['HTTP_AUTHORIZATION']) && preg_match('/Basic\s+(.*)$/i', $_SERVER['HTTP_AUTHORIZATION'], $matches)) {
+								    list($name, $password) = explode(':', base64_decode($matches[1]));
+								    $username = strip_tags($name);
+								    $password = strip_tags($password);
+								    reset($GLOBALS['SH_AUTH']['AUTH']);
+								    $auth_user = key($GLOBALS['SH_AUTH']['AUTH']);
+									if($_SERVER['PHP_AUTH_USER'] == $auth_user && $_SERVER['PHP_AUTH_PW']==$GLOBALS['SH_AUTH']['AUTH'][$auth_user] && $username == $auth_user && $password==$GLOBALS['SH_AUTH']['AUTH'][$auth_user]){
+										$pass_basic = 1;
+									}    
+								}
+								if($pass_basic == 1){
+									$auth_basic = true;
+								}
+
+							}
+				          ############################### AUTHENTICATION END ####################################
+						  #if((isset($_SERVER['HTTP_'.SH_KEY]) && $_SERVER['HTTP_'.SH_KEY] == SH_VALUE) || SHA==FALSE || $this->check_auth == FALSE){
+						   if(($auth_head==true && $auth_basic==true) || SHA==FALSE || $this->check_auth == FALSE ){
 								$call = $this->access;
 								if(is_string($call)){ # Routes
 									$splitC = explode('::',$call);
@@ -569,10 +605,12 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 									#unset($_GET,$_POST);
 								}
 						  }else{ #echo $_SERVER['HTTP_'.SH_KEY];
-							    if(SHA==true && !isset($_SERVER['HTTP_'.SH_KEY])){
-									die($this->setHeader(401,"Unauthorized"));
-								}elseif($_SERVER['HTTP_'.SH_KEY] != SH_VALUE){
-									die($this->setHeader(401,"Unable to verify your token Value."));	
+							    if($auth_head==false){
+									die($this->setHeader(401,"Unauthorized, Unable to verify your headers"));
+								}else if($auth_basic==false){
+									die($this->setHeader(401,"Unauthorized, Basic Auth Failed"));
+								}else{
+									die($this->setHeader(401,"Unable to access due to unauthorized request"));
 								}
 								
 						 }

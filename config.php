@@ -5,7 +5,17 @@
 #session_start();
 define("SH_KEY","API");
 define("SH_VALUE","SH");
+$SH_AUTH = [
+			"HEAD"=>[
+						"API"=>"SH",
+						"AUTHOR"=>"bala"
+					],
+			"AUTH"=>[
+					"access_token"=>"shservice"
+					]
+		   ];
 
+$_GLOBALS['SH_AUTH'] = $SH_AUTH;
 
 /* CONTROLLER */
 #=================================#

@@ -527,7 +527,11 @@ class Http{ var $http_method; public $db; protected $route_url=[]; public $next_
 									$auth_head = true;
 								}
 							}
-
+						
+							$auth_headers = apache_request_headers(); # If apache | nginx is default
+							if (isset($auth_headers['Authorization'])) {
+							    $_SERVER['HTTP_AUTHORIZATION'] = $auth_headers['Authorization'];
+							}
 							$auth_basic = true;
 							if(SHA==true && array_key_exists("AUTH", $GLOBALS['SH_AUTH']) && count($GLOBALS['SH_AUTH']['AUTH'])>0){
 								$pass_basic = 0; $auth_basic = false;

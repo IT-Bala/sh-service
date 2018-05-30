@@ -18,7 +18,14 @@ function remote_sh_cmd($url){ $baseUrl = $url;
 			ob_get_flush();
 			remote_sh_cmd($baseUrl);
 		}
-		if($cmd == 'exit') exit(0);				
+		if($cmd == 'exit') exit(0);
+		if($cmd == 'clear' || $cmd == 'reset' || $cmd == 'cls'){  
+				if(strtoupper(substr(PHP_OS, 0, 3)) == 'WIN'){
+					echo shell_exec("cls"); $cmd = '-v'; 
+				}else{
+					echo shell_exec("reset"); $cmd = '-v';
+				}
+			}
 		$cmd = str_replace(" ","/",$cmd);
 		$basecmd = strstr($cmd,"/",true);
 		$url = $url.$cmd;
@@ -408,6 +415,13 @@ if(isset($argv[1]) && $argv[1]!=''){
 				sh_cmd();
 			}
 			if($cmd == 'exit') exit(0);
+			if($cmd == 'clear' || $cmd == 'reset' || $cmd == 'cls'){  
+				if(strtoupper(substr(PHP_OS, 0, 3)) == 'WIN'){
+					echo shell_exec("cls"); $cmd = '-v'; 
+				}else{
+					echo shell_exec("reset"); $cmd = '-v';
+				}
+			}
 			$explode = explode(" ",$cmd);
 			if(count($explode) >=2){
 				$baseCmd = strtolower($explode[0]);
